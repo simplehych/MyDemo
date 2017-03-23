@@ -1,2 +1,5 @@
-# first
-first repository
+note：
+
+1、接口，程序的扩展性、解耦、复用
+
+2、映射？
