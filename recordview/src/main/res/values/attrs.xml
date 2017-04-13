@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleabl name="recordView">
+    <declare-styleable name="recordView">
         <attr name="hintText" format="string"/>
         <attr name="playHintText" format="string"/>
         <attr name="timeTextColor" format="reference"/>
@@ -13,5 +13,5 @@
             <enum name="record_model" value="1"/>
             <enum name="play_model" value="2"/>
         </attr>
-    </declare-styleabl>
+    </declare-styleable>
 </resources>
