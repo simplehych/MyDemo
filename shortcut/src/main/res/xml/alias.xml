@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<alias xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <intent android:action="android.alis.action.STARTMAIN"
+        android:targetPackage="com.zy.aliasactivitydemo"
+        android:targetClass="com.zy.aliasactivitydemo.MainActivity"/>
+
+</alias>

@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MyDemo.iml" filepath="$PROJECT_DIR$/MyDemo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/memoryleak/memoryleak.iml" filepath="$PROJECT_DIR$/memoryleak/memoryleak.iml" />
       <module fileurl="file://$PROJECT_DIR$/recordview/recordview.iml" filepath="$PROJECT_DIR$/recordview/recordview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shortcut/shortcut.iml" filepath="$PROJECT_DIR$/shortcut/shortcut.iml" />
     </modules>
   </component>
 </project>
