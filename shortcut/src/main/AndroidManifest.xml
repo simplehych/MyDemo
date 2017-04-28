@@ -99,7 +99,15 @@
 
         <activity android:name=".CutActivity3">
             <intent-filter>
-                <action android:name="android.intent.action.CREATE_SHORTCUT" /><!--必须显示配置-->
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="peopledailyphone"></data>
             </intent-filter>
         </activity>
 
