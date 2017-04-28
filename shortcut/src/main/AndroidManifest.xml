@@ -84,60 +84,44 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PeopleActivity">
+        <activity android:name=".PendingActivity">
+
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="peopledailyphone" />
-
+                <!--使用本App生成必须加此action，否则显示未安装该应用，使用隐式Scheme或者Uri生成则不需要-->
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
             </intent-filter>
-
         </activity>
 
-        <activity android:name=".CutActivity3">
+        <activity-alias
+            android:name="com.simple.mydemo.PendingActivity_Alias_1"
+            android:targetActivity=".PendingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
             </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="com.simple.mydemo.PendingActivity_Alias_2"
+            android:targetActivity=".PendingActivity">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity android:name=".SchemeActivity">
+            <intent-filter>
+                <!--待考证：此为创建桌面小工具的图标，隐含崩溃删除不写-->
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
 
                 <category android:name="android.intent.category.DEFAULT"></category>
-                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.APP_BROWSER"></category>
 
-                <data android:scheme="peopledailyphone"></data>
+                <data android:scheme="http"></data>
             </intent-filter>
         </activity>
-
-        <!--别名前必须加包名啊，否则显示未安装apk ！！！！！！！！！！！！！-->
-        <activity-alias
-            android:name="com.simple.mydemo.AliasCutActivity3"
-            android:targetActivity="com.simple.mydemo.CutActivity3">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"></category>
-
-                <action android:name="android.intent.action.CREATE_SHORTCUT" />
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:name="com.simple.mydemo.AliasCutActivity4"
-            android:targetActivity=".CutActivity3">
-            <intent-filter>
-                <action android:name="android.intent.action.CREATE_SHORTCUT" />
-            </intent-filter>
-        </activity-alias>
-
-
-        <activity android:name=".CutActivity4">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-                <action android:name="android.intent.action.CREATE_SHORTCUT" />
-            </intent-filter>
-        </activity>
-
     </application>
 
 </manifest>

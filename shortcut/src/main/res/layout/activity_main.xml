@@ -3,48 +3,57 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:orientation="vertical"
+    android:padding="10dp"
     tools:context="com.simple.mydemo.MainActivity">
 
     <Button
-        android:id="@+id/people1"
+        android:id="@+id/startActivityByUri"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="people1" />
+        android:text="通过Uri方式启动Activity" />
 
     <Button
-        android:id="@+id/people2"
+        android:id="@+id/createShortcutToUri"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="people2" />
+        android:text="创建桌面图标跳转至指定Uri" />
+
+    <Button
+        android:id="@+id/createShortcutToActivity"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="创建桌面图标跳转至指定Activity" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_marginTop="10dp"
         android:background="#666"></View>
 
     <Button
-        android:id="@+id/test1"
+        android:id="@+id/createShortcutToActivityAlisa_1"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="test1" />
+        android:text="创建桌面图标跳转至指定Activity 别名方式 图标1" />
 
     <Button
-        android:id="@+id/test2"
+        android:id="@+id/createShortcutToActivityAlisa_2"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="test2" />
+        android:text="创建桌面图标跳转至指定Activity 别名方式 图标2" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="10dp"
+        android:background="#666"></View>
 
     <Button
-        android:id="@+id/test3"
+        android:id="@+id/createShortcutToScheme"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="test3" />
+        android:text="创建桌面图标跳转至指定Activity  Scheme方式" />
 
-    <Button
-        android:id="@+id/test4"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="test4" />
 
 </LinearLayout>
