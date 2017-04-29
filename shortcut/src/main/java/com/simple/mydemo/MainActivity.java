@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
     }
 
-
     /**
      * 创建桌面快捷图标跳转至指定的Uri，使用此方式删除应用之后，创建的快捷图标不会删除，如果采用跳转到本App的Activity的方式生成桌面快捷图标会删除
      * 启动之后为打开另一个App，点击返回之后会生成一次按照该App的回退方式返回
@@ -195,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON, R.mipmap.ic_launcher);
         shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, pendingIntent);
         sendBroadcast(shortcutIntent);
-
     }
 
 
