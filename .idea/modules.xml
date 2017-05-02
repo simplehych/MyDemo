@@ -4,8 +4,10 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MyDemo.iml" filepath="$PROJECT_DIR$/MyDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/memoryleak/memoryleak.iml" filepath="$PROJECT_DIR$/memoryleak/memoryleak.iml" />
-      <module fileurl="file://$PROJECT_DIR$/recordview/recordview.iml" filepath="$PROJECT_DIR$/recordview/recordview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/widget/multiimageview/multiimageview.iml" filepath="$PROJECT_DIR$/widget/multiimageview/multiimageview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/widget/recordview/recordview.iml" filepath="$PROJECT_DIR$/widget/recordview/recordview.iml" />
       <module fileurl="file://$PROJECT_DIR$/shortcut/shortcut.iml" filepath="$PROJECT_DIR$/shortcut/shortcut.iml" />
+      <module fileurl="file://$PROJECT_DIR$/widget/widget.iml" filepath="$PROJECT_DIR$/widget/widget.iml" />
     </modules>
   </component>
 </project>

@@ -20,6 +20,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
+ * 录制声音，声音大小控制波纹的抖动
+ * <p>
  * Created by hych on 2017/4/10.
  */
 

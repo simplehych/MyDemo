@@ -1,1 +1,4 @@
-include ':shortcut', ':recordview', ':memoryleak'
+include ':shortcut'
+include ':memoryleak'
+include ':widget:recordview'
+include ':widget:multiimageview'
