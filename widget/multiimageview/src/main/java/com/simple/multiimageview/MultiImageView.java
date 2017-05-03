@@ -2,8 +2,10 @@ package com.simple.multiimageview;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -181,7 +183,7 @@ public class MultiImageView extends LinearLayout {
      */
     private ImageView creatImageView(int position, boolean isMultiImgs) {
         String imgUrl = mImgUrlList.get(position);
-        ImageView imageView = new ImageView(getContext());
+        ImageView imageView = new ColorFilterImageView(getContext());
 
         if (isMultiImgs) {//多张图的参数大小
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -233,11 +235,13 @@ public class MultiImageView extends LinearLayout {
         return imageView;
     }
 
-
     private void SetOnMultiImageViewItemClickListener(OnMultiImageViewItemClickListener listener) {
         this.mOnMultiItemClickListener = listener;
     }
 
+    /**
+     * 按下图片可以变灰的ImageView
+     */
     private class OnMultiImageViewClickListener implements OnClickListener {
         private int position;
 
@@ -253,10 +257,43 @@ public class MultiImageView extends LinearLayout {
         }
     }
 
-
     public interface OnMultiImageViewItemClickListener {
         void onItemClick(View view, int position);
     }
+
+    public class ColorFilterImageView extends ImageView implements OnTouchListener {
+
+        public ColorFilterImageView(Context context) {
+            super(context);
+            init();
+        }
+
+        public ColorFilterImageView(Context context, @Nullable AttributeSet attrs) {
+            super(context, attrs);
+            init();
+        }
+
+        private void init() {
+            setOnTouchListener(this);
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);//按下时变灰
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    setColorFilter(Color.TRANSPARENT);//手抬起或者取消时恢复原色，透明
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+    }
+
 
     /**
      * 屏幕适配，dip转px
