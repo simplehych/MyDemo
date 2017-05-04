@@ -52,6 +52,7 @@ public class PieView extends View {
         super(context, attrs);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setAntiAlias(true);//抗锯齿
+
     }
 
     @Override

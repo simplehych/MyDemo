@@ -19,7 +19,7 @@
         </activity>
 
         <activity android:name=".pieview.PieViewActivity"></activity>
-
+        <activity android:name=".radarview.RadarViewActivity"></activity>
 
     </application>
 
