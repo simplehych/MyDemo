@@ -6,6 +6,7 @@
     android:orientation="vertical"
     tools:context="com.simple.practice.MainActivity">
 
+
     <Button
         android:id="@+id/PieView"
         android:layout_width="match_parent"
@@ -17,5 +18,28 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="RadarView" />
+
+    <Button
+        android:id="@+id/BezierQuadView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="BezierQuadView" />
+
+    <Button
+        android:id="@+id/BezierCubicView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="BezierCubicView" />
+
+    <ImageView
+        android:id="@+id/test_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_launcher"/>
+    <ImageView
+        android:id="@+id/test_iv2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 
 </LinearLayout>
