@@ -30,9 +30,10 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
         imageView = (ImageView) findViewById(R.id.test_iv);
+
         new myAsynTask().execute();
 
-        Bitmap bm = BitmapFactory.decodeFile("path");//获取bimap从文件中
+
     }
 
     Bitmap getImageFromNetwork() {
@@ -69,19 +70,25 @@ public class TestActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * 保存Bitmap到本地
+     *
+     * @param bitmap
+     */
     public void saveBitmap(Bitmap bitmap) {
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) // 判断是否可以对SDcard进行操作
-        {    // 获取SDCard指定目录下
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {     // 判断是否可以对SDcard进行操作
+            // 获取SDCard指定目录下
             String sdCardDir = Environment.getExternalStorageDirectory() + "/CoolImage/";
             File dirFile = new File(sdCardDir);  //目录转化成文件夹
             if (!dirFile.exists()) {              //如果不存在，那就建立这个文件夹
                 dirFile.mkdirs();
             }
             //文件夹有啦，就可以保存图片啦
-            File file = new File(sdCardDir, System.currentTimeMillis() + ".jpg");// 在SDcard的目录下创建图片文,以当前时间为其命名
+            File file = new File(sdCardDir, System.currentTimeMillis() + ".png");// 在SDcard的目录下创建图片文,以当前时间为其命名
             try {
                 FileOutputStream out = new FileOutputStream(file);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                 System.out.println("_________保存到____sd______指定目录文件夹下____________________");
                 out.flush();
                 out.close();
@@ -89,6 +96,18 @@ public class TestActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 从本地文件读取Bitmap
+     *
+     * @param path
+     * @return
+     */
+    public Bitmap getBitmap(String path) {
+        File file = new File(path);
+        Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
+        return bitmap;
     }
 
 }
