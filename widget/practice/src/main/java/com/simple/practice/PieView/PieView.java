@@ -1,4 +1,4 @@
-package com.simple.practice.pieview;
+package com.simple.practice.PieView;
 
 import android.content.Context;
 import android.graphics.Canvas;

@@ -18,12 +18,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".pieview.PieViewActivity"></activity>
-        <activity android:name=".radarview.RadarViewActivity"></activity>
+        <activity android:name=".PieView.PieViewActivity"></activity>
+        <activity android:name=".RadarView.RadarViewActivity"></activity>
         <activity android:name=".BezierQuad.BezierQuadActivity"></activity>
         <activity android:name=".BezierCubic.BezierCubicActivity"></activity>
         <activity android:name=".BezierCircleToHeart.BezierCircleToHeartActivity"></activity>
-
+        <activity android:name=".MagicCircle.MagicCircleActivity"></activity>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.simple.practice.radarview;
+package com.simple.practice.RadarView;
 
 import android.content.Context;
 import android.graphics.Canvas;

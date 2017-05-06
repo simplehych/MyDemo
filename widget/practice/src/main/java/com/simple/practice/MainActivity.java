@@ -1,20 +1,16 @@
 package com.simple.practice;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.simple.practice.BezierCircleToHeart.BezierCircleToHeartActivity;
 import com.simple.practice.BezierCubic.BezierCubicActivity;
 import com.simple.practice.BezierQuad.BezierQuadActivity;
-import com.simple.practice.pieview.PieViewActivity;
-import com.simple.practice.radarview.RadarViewActivity;
+import com.simple.practice.MagicCircle.MagicCircleActivity;
+import com.simple.practice.PieView.PieViewActivity;
+import com.simple.practice.RadarView.RadarViewActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, BezierCircleToHeartActivity.class));
+            }
+        });
+        findViewById(R.id.MagicCircle).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, MagicCircleActivity.class));
             }
         });
     }

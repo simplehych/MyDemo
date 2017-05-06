@@ -1,4 +1,4 @@
-package com.simple.practice.pieview;
+package com.simple.practice.PieView;
 
 /**
  * Created by hych on 2017/5/4 10:03
