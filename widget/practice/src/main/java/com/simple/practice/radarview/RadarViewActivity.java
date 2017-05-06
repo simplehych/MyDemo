@@ -20,17 +20,6 @@ public class RadarViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        ImageView imageView2 = (ImageView) findViewById(R.id.test_iv2);
-
-//        Bundle bundle = getIntent().getBundleExtra("bundle");
-//        Bitmap bitmap = bundle.getParcelable("bitmap");
-
-
-        Bitmap bitmap = getIntent().getParcelableExtra("bitmap");
-        imageView2.setImageBitmap(bitmap);
-
-//        setContentView(new RadarView(this));
+        setContentView(new RadarView(this));
     }
 }

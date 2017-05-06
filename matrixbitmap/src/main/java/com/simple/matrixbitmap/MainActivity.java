@@ -1,8 +1,12 @@
 package com.simple.matrixbitmap;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -37,6 +41,25 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //从图片中获取Bitmap此方法，测试无效，可能姿势不对
+//        ImageView imageView = new ImageView(this);
+//        imageView.setDrawingCacheEnabled(true);
+//        final Bitmap bitmap = imageView.getDrawingCache();
+//        imageView.setDrawingCacheEnabled(false);
+
+        //从图片中可以直接获取Drawable，然后转成Bitmap，但是转的方法有问题，可能不适用在fresco的SimpleDrawView中
+//        Drawable drawable = imageView.getDrawable();
+//        Bitmap bitmap1 = drawableToBitmap(drawable);
+
+        //另：通过Intent进行Bitmap的传递可以，但是Drawable不行，可以通过设置全局静态变量来获取，详情请看frescocutimg Demo
+//        Intent intent = new Intent(MainActivity.this, RadarViewActivity.class);
+//        intent.putExtra("bitmap", bitmap);
+//        Bundle bundle = new Bundle();
+//        bundle.putParcelable("bitmap", bitmap);
+//        intent.putExtra("bundle", bundle);
+//        startActivity(intent);
+
         init();
     }
 
@@ -129,6 +152,21 @@ public class MainActivity extends AppCompatActivity {
     public Bitmap getBitmap(String path) {
         File file = new File(path);
         Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
+        return bitmap;
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap = Bitmap
+                .createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
+                                : Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(bitmap);
+        // canvas.setBitmap(bitmap);
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight());
+        drawable.draw(canvas);
         return bitmap;
     }
 
