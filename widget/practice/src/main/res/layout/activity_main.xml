@@ -43,4 +43,10 @@
         android:layout_height="50dp"
         android:text="MagicCircle" />
 
+    <Button
+        android:id="@+id/SearchView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="SearchView" />
+
 </LinearLayout>

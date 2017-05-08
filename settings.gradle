@@ -1,4 +1,4 @@
-include ':shortcut', ':matrixbitmap', ':frescocutimg'
+include ':shortcut', ':matrixbitmap', ':frescocutimg', ':app'
 include ':memoryleak'
 include ':widget:recordview'
 include ':widget:multiimageview'

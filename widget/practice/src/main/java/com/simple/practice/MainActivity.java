@@ -11,6 +11,7 @@ import com.simple.practice.BezierQuad.BezierQuadActivity;
 import com.simple.practice.MagicCircle.MagicCircleActivity;
 import com.simple.practice.PieView.PieViewActivity;
 import com.simple.practice.RadarView.RadarViewActivity;
+import com.simple.practice.SearchView.SearchViewActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,16 +46,25 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, BezierCubicActivity.class));
             }
         });
+
         findViewById(R.id.BezierCircleToHeart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, BezierCircleToHeartActivity.class));
             }
         });
+
         findViewById(R.id.MagicCircle).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, MagicCircleActivity.class));
+            }
+        });
+
+        findViewById(R.id.SearchView).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, SearchViewActivity.class));
             }
         });
     }
