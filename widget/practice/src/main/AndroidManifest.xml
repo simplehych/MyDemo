@@ -25,6 +25,7 @@
         <activity android:name=".BezierCircleToHeart.BezierCircleToHeartActivity"></activity>
         <activity android:name=".MagicCircle.MagicCircleActivity"></activity>
         <activity android:name=".SearchView.SearchViewActivity"></activity>
+        <activity android:name=".RegionClickView.RegionClickViewActivity"></activity>
     </application>
 
 </manifest>

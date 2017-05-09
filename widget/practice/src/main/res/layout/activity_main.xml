@@ -49,4 +49,10 @@
         android:layout_height="50dp"
         android:text="SearchView" />
 
+    <Button
+        android:id="@+id/RegionClickView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="RegionClickView" />
+
 </LinearLayout>
