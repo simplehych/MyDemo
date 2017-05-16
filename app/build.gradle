@@ -15,9 +15,15 @@ android {
 
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            getuiDebug()
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            getuiRelease()
         }
     }
 }
@@ -31,3 +37,30 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 }
+
+def getuiDebug() {
+    ext.getui = new File('getui.properties')
+    getui.text = "GETUI_APP_ID=" + "${loadParams("DEBUG_GETUI_APPID")}\n" +
+            "GETUI_APP_KEY=" + "${loadParams("DEBUG_GETUI_APPKEY")}\n" +
+            "GETUI_APP_SECRET=" + "${loadParams("DEBUG_GETUI_APPSECRET")}"
+}
+
+def getuiRelease() {
+    ext.getui = new File('getui.properties')
+    getui.text = "GETUI_APP_ID=" + "${loadParams("RELEASE_GETUI_APPID")}\n" +
+            "GETUI_APP_KEY=" + "${loadParams("RELEASE_GETUI_APPKEY")}\n" +
+            "GETUI_APP_SECRET=" + "${loadParams("RELEASE_GETUI_APPSECRET")}"
+}
+
+def loadParams(String name) {
+    return hasProperty(name) ? getProperty(name) : ""
+}
+
+def buildNumberIncrease() {
+    ext._build_number_file = new File('build_number.properties')
+    println 'Old build number: ' + _build_number_file.text
+    ext.buildNumber = _build_number_file.text.toInteger() + 1
+    println 'New build number: ' + buildNumber
+    _build_number_file.text = buildNumber
+}
+

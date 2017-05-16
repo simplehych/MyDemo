@@ -1,6 +1,7 @@
 package com.simple.app;
 
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
@@ -41,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
         matrix2.postRotate(angle);
         matrix2.postTranslate(pivotX, pivotY);
         Log.e("Simple", matrix2.toShortString());
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.outWidth = 960 / 2;
+        options.outHeight = 960 / 2;
     }
 
 }
