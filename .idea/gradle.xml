@@ -5,15 +5,18 @@
       <GradleProjectSettings>
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="$USER_HOME$/.gradle/wrapper/dists/gradle-3.3-all/55gk2rcmfc6p2dg9u9ohc3hw9/gradle-3.3" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/frescocutimg" />
+            <option value="$PROJECT_DIR$/kotlin" />
             <option value="$PROJECT_DIR$/matrixbitmap" />
             <option value="$PROJECT_DIR$/memoryleak" />
             <option value="$PROJECT_DIR$/shortcut" />
             <option value="$PROJECT_DIR$/svg" />
+            <option value="$PROJECT_DIR$/testbintray" />
             <option value="$PROJECT_DIR$/widget" />
             <option value="$PROJECT_DIR$/widget/multiimageview" />
             <option value="$PROJECT_DIR$/widget/practice" />

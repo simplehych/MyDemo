@@ -36,6 +36,9 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
+
+    //PictureSelector
+    compile 'com.github.LuckSiege.PictureSelector:picture_library:v1.3.1'
 }
 
 def getuiDebug() {

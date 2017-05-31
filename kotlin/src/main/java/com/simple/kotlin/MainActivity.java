@@ -1,7 +1,5 @@
-package com.simple.svg;
+package com.simple.kotlin;
 
-import android.graphics.drawable.VectorDrawable;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
