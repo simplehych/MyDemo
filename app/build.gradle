@@ -26,6 +26,9 @@ android {
             getuiRelease()
         }
     }
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
 }
 
 dependencies {
@@ -38,7 +41,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     //PictureSelector
-    compile 'com.github.LuckSiege.PictureSelector:picture_library:v1.3.1'
+    compile 'com.github.LuckSiege:PictureSelectorLight:v1.1.4'
 }
 
 def getuiDebug() {
