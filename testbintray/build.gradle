@@ -13,6 +13,10 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
+
+    lintOptions {
+        abortOnError false
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -54,3 +58,13 @@ dependencies {
 //}
 //apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
 //apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+apply plugin: 'com.novoda.bintray-release'//添加
+publish {
+    userOrg = 'peoplezixun'//bintray.com用户名
+    repoName = 'maven'
+    groupId = 'com.people.library'//jcenter上的路径
+    artifactId = 'test11'//项目名称
+    publishVersion = '0.0.1'//版本号
+    desc = 'android utils'
+    website = 'https://github.com/peoplezixun/PeopleLibApp'
+}

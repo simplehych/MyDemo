@@ -31,3 +31,53 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 }
+
+//project.gradle.addListener(new BuildTimeListener())
+//
+//public class BuildTimeListener implements TaskExecutionListener, BuildListener {
+//    private Clock clock
+//    private times = []
+//
+//    @Override
+//    void beforeExecute(Task task) {
+//        clock = new org.gradle.util.Clock()
+//    }
+//
+//    @Override
+//    void afterExecute(Task task, TaskState taskState) {
+//        def ms = clock.timeInMs
+//        times.add([ms, task.path])
+//
+//        //task.project.logger.warn "${task.path} spend ${ms}ms"
+//    }
+//
+//    @Override
+//    void buildStarted(Gradle gradle) {
+//
+//    }
+//
+//    @Override
+//    void settingsEvaluated(Settings settings) {
+//
+//    }
+//
+//    @Override
+//    void projectsLoaded(Gradle gradle) {
+//
+//    }
+//
+//    @Override
+//    void projectsEvaluated(Gradle gradle) {
+//
+//    }
+//
+//    @Override
+//    void buildFinished(BuildResult result) {
+//        println "Task spend time:"
+//        for (time in times) {
+//            if (time[0] >= 50) {
+//                printf "%7sms  %s\n", time
+//            }
+//        }
+//    }
+//}
