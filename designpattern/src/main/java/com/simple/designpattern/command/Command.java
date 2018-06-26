@@ -7,5 +7,6 @@ package com.simple.designpattern.command;
  *
  * Created by hych on 2018/6/20 15:27.
  */
-public class Command {
+public interface Command {
+    public void execute();
 }
