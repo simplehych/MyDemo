@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/MyDemo.iml" filepath="$PROJECT_DIR$/MyDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/designpattern/designpattern.iml" filepath="$PROJECT_DIR$/designpattern/designpattern.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ebook/ebook.iml" filepath="$PROJECT_DIR$/ebook/ebook.iml" />
       <module fileurl="file://$PROJECT_DIR$/frescocutimg/frescocutimg.iml" filepath="$PROJECT_DIR$/frescocutimg/frescocutimg.iml" />
       <module fileurl="file://$PROJECT_DIR$/kotlin/kotlin.iml" filepath="$PROJECT_DIR$/kotlin/kotlin.iml" />
       <module fileurl="file://$PROJECT_DIR$/matrixbitmap/matrixbitmap.iml" filepath="$PROJECT_DIR$/matrixbitmap/matrixbitmap.iml" />
