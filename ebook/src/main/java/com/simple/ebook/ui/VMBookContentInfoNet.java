@@ -4,9 +4,8 @@ import android.content.Context;
 
 import com.allen.library.RxHttpUtils;
 import com.allen.library.interceptor.Transformer;
-import com.simple.ebook.I.IBookChapters;
+import com.simple.ebook.Interfaces.IBookChapters;
 import com.simple.ebook.api.BookService;
-import com.simple.ebook.base.BaseViewModel;
 import com.simple.ebook.bean.BookChaptersBean;
 import com.simple.ebook.bean.ChapterContentBean;
 import com.simple.ebook.helper.BookManager;
@@ -30,17 +29,16 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Liang_Lu on 2017/12/11.
  */
 
-public class VMBookContentInfo extends BaseViewModel {
-    IBookChapters iBookChapters;
+public class VMBookContentInfoNet extends BookContentModel {
 
     Disposable mDisposable;
     String title;
 
-    public VMBookContentInfo(Context mContext, IBookChapters iBookChapters) {
-        super(mContext);
-        this.iBookChapters = iBookChapters;
+    public VMBookContentInfoNet(Context mContext, IBookChapters iBookChapters) {
+        super(mContext,iBookChapters);
     }
 
+    @Override
     public void loadChapters(String bookId) {
         RxHttpUtils.getSInstance().addHeaders(tokenMap()).createSApi(BookService.class)
                 .bookChapters(bookId)
@@ -71,6 +69,7 @@ public class VMBookContentInfo extends BaseViewModel {
      * @param bookId
      * @param bookChapterList
      */
+    @Override
     public void loadContent(String bookId, List<TxtChapter> bookChapterList) {
         int size = bookChapterList.size();
         //取消上次的任务，防止多次加载

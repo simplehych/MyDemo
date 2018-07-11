@@ -4,6 +4,8 @@ import android.support.annotation.StringRes;
 
 import com.simple.ebook.base.BaseApplication;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -125,5 +127,15 @@ public class StringUtils {
                 c[i] = (char) (c[i] - 65248);
         }
         return new String(c);
+    }
+
+    public static String bytes2Hex(byte[] bs) {
+        if (bs == null || bs.length <= 0) {
+            return null;
+        }
+        java.nio.charset.Charset charset = java.nio.charset.Charset.defaultCharset();
+        ByteBuffer buf = ByteBuffer.wrap(bs);
+        CharBuffer cBuf = charset.decode(buf);
+        return cBuf.toString();
     }
 }

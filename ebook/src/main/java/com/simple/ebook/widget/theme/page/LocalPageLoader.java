@@ -1,16 +1,15 @@
 package com.simple.ebook.widget.theme.page;
 
 
-import com.lianglu.weyue.db.entity.BookChapterBean;
-import com.lianglu.weyue.db.entity.CollBookBean;
-import com.lianglu.weyue.db.helper.CollBookHelper;
-import com.lianglu.weyue.utils.Charset;
-import com.lianglu.weyue.utils.Constant;
-import com.lianglu.weyue.utils.FileUtils;
-import com.lianglu.weyue.utils.IOUtils;
-import com.lianglu.weyue.utils.StringUtils;
-import com.lianglu.weyue.utils.ToastUtils;
-import com.lianglu.weyue.utils.rxhelper.RxUtils;
+import com.simple.ebook.base.Constant;
+import com.simple.ebook.bean.BookChapterBean;
+import com.simple.ebook.bean.CollBookBean;
+import com.simple.ebook.helper.CollBookHelper;
+import com.simple.ebook.utils.Charset;
+import com.simple.ebook.utils.FileUtils;
+import com.simple.ebook.utils.StringUtils;
+import com.simple.ebook.utils.ToastUtils;
+import com.simple.ebook.utils.rxhelper.RxUtils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -95,7 +94,7 @@ public class LocalPageLoader extends PageLoader {
             @Override
             public void subscribe(SingleEmitter<Void> e) throws Exception {
                 loadBook(mBookFile);
-                e.onSuccess(new Void());
+                e.onSuccess(null);
             }
         }).compose(RxUtils::toSimpleSingle)
                 .subscribe(new SingleObserver<Void>() {
@@ -306,7 +305,7 @@ public class LocalPageLoader extends PageLoader {
         }
 
         mChapterList = chapters;
-        IOUtils.close(bookStream);
+        bookStream.close();
 
         System.gc();
         System.runFinalization();
@@ -345,15 +344,13 @@ public class LocalPageLoader extends PageLoader {
             int extent = (int) (chapter.end - chapter.start);
             byte[] content = new byte[extent];
             bookStream.read(content, 0, extent);
+            bookStream.close();
             return content;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            IOUtils.close(bookStream);
         }
-
         return new byte[0];
     }
 

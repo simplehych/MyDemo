@@ -1,22 +1,23 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
 
     defaultConfig {
         applicationId "com.simple.ebook"
-        minSdkVersion 15
-        targetSdkVersion 26
+        minSdkVersion 16
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        jackOptions {
-            enabled true
-        }
+//        jackOptions {
+//            enabled true
+//        }
     }
 
     buildTypes {
@@ -30,18 +31,29 @@ android {
         enabled = true
     }
 
+//    compileOptions {
+//        sourceCompatibility JavaVersion.VERSION_1_8
+//        targetCompatibility JavaVersion.VERSION_1_8
+//        incremental false
+//    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
-
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile "com.android.support:design:26.1.0"
-    compile "com.android.support:support-vector-drawable:26.1.0"
+    compile 'com.android.support:appcompat-v7:27.1.0'
+    compile "com.android.support:design:27.1.0"
+    compile "com.android.support:support-vector-drawable:27.1.0"
     testCompile 'junit:junit:4.12'
     androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -85,4 +97,8 @@ dependencies {
      * BaseRecyclerViewAdapterHelper
      */
     compile "com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30"
+
+    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:+'
+
+    compile 'org.jsoup:jsoup:1.11.3'
 }

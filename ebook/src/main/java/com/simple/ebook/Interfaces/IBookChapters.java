@@ -1,4 +1,4 @@
-package com.simple.ebook.I;
+package com.simple.ebook.Interfaces;
 
 import com.simple.ebook.bean.BookChaptersBean;
 

@@ -9,14 +9,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.lianglu.weyue.utils.ScreenUtils;
-import com.lianglu.weyue.widget.animation.CoverPageAnim;
-import com.lianglu.weyue.widget.animation.HorizonPageAnim;
-import com.lianglu.weyue.widget.animation.NonePageAnim;
-import com.lianglu.weyue.widget.animation.PageAnimation;
-import com.lianglu.weyue.widget.animation.ScrollPageAnim;
-import com.lianglu.weyue.widget.animation.SimulationPageAnim;
-import com.lianglu.weyue.widget.animation.SlidePageAnim;
+import com.simple.ebook.utils.ScreenUtils;
+import com.simple.ebook.widget.animation.CoverPageAnim;
+import com.simple.ebook.widget.animation.HorizonPageAnim;
+import com.simple.ebook.widget.animation.NonePageAnim;
+import com.simple.ebook.widget.animation.PageAnimation;
+import com.simple.ebook.widget.animation.ScrollPageAnim;
+import com.simple.ebook.widget.animation.SimulationPageAnim;
+import com.simple.ebook.widget.animation.SlidePageAnim;
 
 
 /**

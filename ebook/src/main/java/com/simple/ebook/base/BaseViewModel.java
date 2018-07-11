@@ -35,10 +35,12 @@ public class BaseViewModel {
      *
      * @return
      */
-    public Map tokenMap() {
+    public static Map tokenMap() {
         Map<String, Object> map = new HashMap<>();
-        map.put("access-token", SharedPreUtils.getInstance().getString("token", "weyue"));
         map.put("app-type", "Android");
+//        map.put("access-token", SharedPreUtils.getInstance().getString("token", "weyue"));
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiOTYzODUyNzQxIiwiaWF0IjoxNTMwNDkyNDI3LCJleHAiOjE1MzMwODQ0Mjd9.2RBbniymuRRhd5Xhn29qbJv13z4AjpRq15JERakIWcs";
+        map.put("access-token", token);
 //        map.put("version-code", WYApplication.packageInfo.versionCode);
         return map;
     }

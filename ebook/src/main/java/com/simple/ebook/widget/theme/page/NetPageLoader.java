@@ -3,8 +3,13 @@ package com.simple.ebook.widget.theme.page;
 import android.support.annotation.Nullable;
 
 
+import com.simple.ebook.base.Constant;
 import com.simple.ebook.bean.BookChapterBean;
 import com.simple.ebook.bean.CollBookBean;
+import com.simple.ebook.helper.BookManager;
+import com.simple.ebook.helper.CollBookHelper;
+import com.simple.ebook.utils.FileUtils;
+import com.simple.ebook.utils.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -62,7 +67,7 @@ public class NetPageLoader extends PageLoader{
 
         //获取要加载的文件
         TxtChapter txtChapter = mChapterList.get(chapter);
-        File file = new File(Constant.BOOK_CACHE_PATH + mCollBook.get_id()
+        File file = new File(BookManager.BOOK_CACHE_PATH + mCollBook.get_id()
                 + File.separator + mChapterList.get(chapter).title + FileUtils.SUFFIX_WY);
         if (!file.exists()) return null;
 

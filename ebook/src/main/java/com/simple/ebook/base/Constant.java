@@ -3,8 +3,6 @@ package com.simple.ebook.base;
 
 import com.simple.ebook.BuildConfig;
 
-import java.io.File;
-
 /**
  * Created by Liang_Lu on 2017/11/22.
  */

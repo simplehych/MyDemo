@@ -29,7 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.simple.ebook.I.IBookChapters;
+import com.simple.ebook.Interfaces.IBookChapters;
 import com.simple.ebook.R;
 import com.simple.ebook.base.BaseActivity;
 import com.simple.ebook.bean.BookChapterBean;
@@ -126,7 +126,7 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
     private String mBookId;
     ReadCategoryAdapter mReadCategoryAdapter;
     List<TxtChapter> mTxtChapters = new ArrayList<>();
-    private VMBookContentInfo mVmContentInfo;
+    private BookContentModel mVmContentInfo;
     List<BookChapterBean> bookChapterList = new ArrayList<>();
 
 
@@ -180,7 +180,7 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mVmContentInfo = new VMBookContentInfo(mContext, this);
+        mVmContentInfo = new VMBookContentInfoLocal(mContext, this);
         setBinddingView(R.layout.activity_read, NO_BINDDING, mVmContentInfo);
 
     }

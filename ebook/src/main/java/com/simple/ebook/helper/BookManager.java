@@ -13,8 +13,7 @@ import java.util.Map;
 
 public class BookManager {
 
-    public static String BOOK_CACHE_PATH = FileUtils.getCachePath() + File.separator
-            + "book_cache" + File.separator;
+    public static String BOOK_CACHE_PATH = FileUtils.getCachePath() + File.separator + "book_cache" + File.separator;
 
     private static final String TAG = "BookManager";
     private String chapterName;
@@ -197,8 +196,7 @@ public class BookManager {
      * @return
      */
     public static boolean isChapterCached(String folderName, String fileName) {
-        File file = new File(BOOK_CACHE_PATH + folderName
-                + File.separator + fileName + FileUtils.SUFFIX_WY);
+        File file = new File(BOOK_CACHE_PATH + folderName + File.separator + fileName + FileUtils.SUFFIX_WY);
         return file.exists();
     }
 

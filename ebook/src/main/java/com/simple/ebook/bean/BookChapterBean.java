@@ -2,6 +2,8 @@ package com.simple.ebook.bean;
 
 import java.io.Serializable;
 
+import nl.siegmann.epublib.domain.Resource;
+
 /**
  * Created by Liang_Lu on 2017/11/21.
  */
@@ -24,6 +26,14 @@ public class BookChapterBean implements Serializable {
 
     private boolean unreadble;
 
+    private Resource resource;
+
+    public BookChapterBean(Resource resource) {
+        this.resource = resource;
+        this.bookId = resource.getId();
+        this.title = resource.getTitle();
+        this.link = resource.getHref();
+    }
 
     public BookChapterBean(String link, String title, String taskName, String bookId,
                            boolean unreadble) {
@@ -80,5 +90,25 @@ public class BookChapterBean implements Serializable {
 
     public boolean getUnreadble() {
         return this.unreadble;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
+
+    @Override
+    public String toString() {
+        return "BookChapterBean{" +
+                "link='" + link + '\'' +
+                ", title='" + title + '\'' +
+                ", taskName='" + taskName + '\'' +
+                ", bookId='" + bookId + '\'' +
+                ", unreadble=" + unreadble +
+                ", resource=" + resource +
+                '}';
     }
 }

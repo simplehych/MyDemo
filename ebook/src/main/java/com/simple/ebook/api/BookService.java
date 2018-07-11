@@ -3,15 +3,11 @@ package com.simple.ebook.api;
 import com.allen.library.bean.BaseData;
 import com.simple.ebook.bean.BookBean;
 import com.simple.ebook.bean.BookChaptersBean;
-import com.simple.ebook.bean.BookClassifyBean;
 import com.simple.ebook.bean.ChapterContentBean;
-
-import java.util.List;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 /**
  * Created by Liang_Lu on 2017/12/3.
@@ -19,26 +15,6 @@ import retrofit2.http.Query;
  */
 
 public interface BookService {
-
-    /**
-     * 获取所有分类
-     *
-     * @return
-     */
-    @GET(ModelPath.API + "/classify")
-    Observable<BaseData<BookClassifyBean>> bookClassify();
-
-    /**
-     * 获取分类下的书籍
-     *
-     * @param type
-     * @param major
-     * @param page
-     * @return
-     */
-    @GET(ModelPath.BOOKS)
-    Observable<BaseData<List<BookBean>>> books(@Query("type") String type,
-                                               @Query("major") String major, @Query("page") int page);
 
     /**
      * 获取书籍信息
@@ -65,24 +41,5 @@ public interface BookService {
      */
     @GET("http://chapterup.zhuishushenqi.com/chapter/{link}")
     Observable<ChapterContentBean> bookContent(@Path("link") String link);
-
-    /**
-     * 根据tag获取书籍
-     *
-     * @param bookTag
-     * @param page
-     * @return
-     */
-    @GET(ModelPath.BOOKS + "/tag")
-    Observable<BaseData<List<BookBean>>> booksByTag(@Query("bookTag") String bookTag, @Query("page") int page);
-
-    /**
-     * 搜索书籍
-     *
-     * @param keyword
-     * @return
-     */
-    @GET(ModelPath.API + "/search")
-    Observable<BaseData<List<BookBean>>> booksSearch(@Query("keyword") String keyword);
 
 }

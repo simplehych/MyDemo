@@ -1,13 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-</RelativeLayout>
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/activity_test_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/activity_test_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/activity_test_1"
+            android:src="@mipmap/ic_launcher" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/activity_test_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/activity_test_2"
+            android:src="@mipmap/ic_launcher" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/activity_test_4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/activity_test_3" />
+    </RelativeLayout>
+
+</android.support.v4.widget.NestedScrollView>
