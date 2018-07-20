@@ -9,9 +9,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -19,6 +21,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.simple.ebook.R;
 import com.simple.ebook.helper.ReadSettingManager;
 import com.simple.ebook.utils.BrightnessUtils;
@@ -28,9 +31,6 @@ import com.simple.ebook.widget.theme.page.PageView;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by newbiechen on 17-5-18.
@@ -43,36 +43,21 @@ public class ReadSettingDialog extends Dialog {
     int[] colorBg = {R.color.color_cec29c, R.color.color_ccebcc,
             R.color.color_aaa, R.color.color_d1cec5, R.color.color_001c27};
 
-    @BindView(R.id.read_setting_iv_brightness_minus)
     ImageView mIvBrightnessMinus;
-    @BindView(R.id.read_setting_sb_brightness)
     SeekBar mSbBrightness;
-    @BindView(R.id.read_setting_iv_brightness_plus)
     ImageView mIvBrightnessPlus;
-    @BindView(R.id.read_setting_cb_brightness_auto)
     CheckBox mCbBrightnessAuto;
-    @BindView(R.id.read_setting_tv_font_minus)
     TextView mTvFontMinus;
-    @BindView(R.id.read_setting_tv_font)
     TextView mTvFont;
-    @BindView(R.id.read_setting_tv_font_plus)
     TextView mTvFontPlus;
-    @BindView(R.id.read_setting_cb_font_default)
     CheckBox mCbFontDefault;
-    @BindView(R.id.read_setting_rg_page_mode)
     RadioGroup mRgPageMode;
 
-    @BindView(R.id.read_setting_rb_simulation)
     RadioButton mRbSimulation;
-    @BindView(R.id.read_setting_rb_cover)
     RadioButton mRbCover;
-    @BindView(R.id.read_setting_rb_slide)
     RadioButton mRbSlide;
-    @BindView(R.id.read_setting_rb_scroll)
     RadioButton mRbScroll;
-    @BindView(R.id.read_setting_rb_none)
     RadioButton mRbNone;
-    @BindView(R.id.read_setting_rv_bg)
     RecyclerView mRvBg;
     /************************************/
     private ReadBgAdapter mReadBgAdapter;
@@ -99,11 +84,30 @@ public class ReadSettingDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_read_setting);
-        ButterKnife.bind(this);
+        initView();
         setUpWindow();
         initData();
         initWidget();
         initClick();
+    }
+
+    private void initView() {
+        mIvBrightnessMinus = (ImageView) findViewById(R.id.read_setting_iv_brightness_minus);
+        mSbBrightness = (SeekBar) findViewById(R.id.read_setting_sb_brightness);
+        mIvBrightnessPlus = (ImageView) findViewById(R.id.read_setting_iv_brightness_plus);
+        mCbBrightnessAuto = (CheckBox) findViewById(R.id.read_setting_cb_brightness_auto);
+        mTvFontMinus = (TextView) findViewById(R.id.read_setting_tv_font_minus);
+        mTvFont = (TextView) findViewById(R.id.read_setting_tv_font);
+        mTvFontPlus = (TextView) findViewById(R.id.read_setting_tv_font_plus);
+        mCbFontDefault = (CheckBox) findViewById(R.id.read_setting_cb_font_default);
+        mRgPageMode = (RadioGroup) findViewById(R.id.read_setting_rg_page_mode);
+
+        mRbSimulation = (RadioButton) findViewById(R.id.read_setting_rb_simulation);
+        mRbCover = (RadioButton) findViewById(R.id.read_setting_rb_cover);
+        mRbSlide = (RadioButton) findViewById(R.id.read_setting_rb_slide);
+        mRbScroll = (RadioButton) findViewById(R.id.read_setting_rb_scroll);
+        mRbNone = (RadioButton) findViewById(R.id.read_setting_rb_none);
+        mRvBg = (RecyclerView) findViewById(R.id.read_setting_rv_bg);
     }
 
     //设置Dialog显示的位置
@@ -117,7 +121,7 @@ public class ReadSettingDialog extends Dialog {
     }
 
     private void initData() {
-        mSettingManager = ReadSettingManager.getInstance();
+        mSettingManager = ReadSettingManager.getInstance(mActivity);
 
         isBrightnessAuto = mSettingManager.isBrightnessAuto();
         mBrightness = mSettingManager.getBrightness();
@@ -196,29 +200,33 @@ public class ReadSettingDialog extends Dialog {
 
     private void initClick() {
         //亮度调节
-        mIvBrightnessMinus.setOnClickListener(
-                (v) -> {
-                    if (mCbBrightnessAuto.isChecked()) {
-                        mCbBrightnessAuto.setChecked(false);
-                    }
-                    int progress = mSbBrightness.getProgress() - 1;
-                    if (progress < 0) return;
-                    mSbBrightness.setProgress(progress);
-                    BrightnessUtils.setBrightness(mActivity, progress);
-                }
+        mIvBrightnessMinus.setOnClickListener(new View.OnClickListener() {
+                                                  @Override
+                                                  public void onClick(View v) {
+                                                      if (mCbBrightnessAuto.isChecked()) {
+                                                          mCbBrightnessAuto.setChecked(false);
+                                                      }
+                                                      int progress = mSbBrightness.getProgress() - 1;
+                                                      if (progress < 0) return;
+                                                      mSbBrightness.setProgress(progress);
+                                                      BrightnessUtils.setBrightness(mActivity, progress);
+                                                  }
+                                              }
         );
-        mIvBrightnessPlus.setOnClickListener(
-                (v) -> {
-                    if (mCbBrightnessAuto.isChecked()) {
-                        mCbBrightnessAuto.setChecked(false);
-                    }
-                    int progress = mSbBrightness.getProgress() + 1;
-                    if (progress > mSbBrightness.getMax()) return;
-                    mSbBrightness.setProgress(progress);
-                    BrightnessUtils.setBrightness(mActivity, progress);
-                    //设置进度
-                    ReadSettingManager.getInstance().setBrightness(progress);
-                }
+        mIvBrightnessPlus.setOnClickListener(new View.OnClickListener() {
+                                                 @Override
+                                                 public void onClick(View v) {
+                                                     if (mCbBrightnessAuto.isChecked()) {
+                                                         mCbBrightnessAuto.setChecked(false);
+                                                     }
+                                                     int progress = mSbBrightness.getProgress() + 1;
+                                                     if (progress > mSbBrightness.getMax()) return;
+                                                     mSbBrightness.setProgress(progress);
+                                                     BrightnessUtils.setBrightness(mActivity, progress);
+                                                     //设置进度
+                                                     ReadSettingManager.getInstance(mActivity).setBrightness(progress);
+                                                 }
+                                             }
         );
 
         mSbBrightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -241,87 +249,103 @@ public class ReadSettingDialog extends Dialog {
                 //设置当前 Activity 的亮度
                 BrightnessUtils.setBrightness(mActivity, progress);
                 //存储亮度的进度条
-                ReadSettingManager.getInstance().setBrightness(progress);
+                ReadSettingManager.getInstance(mActivity).setBrightness(progress);
             }
         });
 
-        mCbBrightnessAuto.setOnCheckedChangeListener(
-                (buttonView, isChecked) -> {
-                    if (isChecked) {
-                        //获取屏幕的亮度
-                        BrightnessUtils.setBrightness(mActivity, BrightnessUtils.getScreenBrightness(mActivity));
-                    } else {
-                        //获取进度条的亮度
-                        BrightnessUtils.setBrightness(mActivity, mSbBrightness.getProgress());
-                    }
-                    ReadSettingManager.getInstance().setAutoBrightness(isChecked);
-                }
+        mCbBrightnessAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                                         @Override
+                                                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                                             if (isChecked) {
+                                                                 //获取屏幕的亮度
+                                                                 BrightnessUtils.setBrightness(mActivity, BrightnessUtils.getScreenBrightness(mActivity));
+                                                             } else {
+                                                                 //获取进度条的亮度
+                                                                 BrightnessUtils.setBrightness(mActivity, mSbBrightness.getProgress());
+                                                             }
+                                                             ReadSettingManager.getInstance(mActivity).setAutoBrightness(isChecked);
+                                                         }
+                                                     }
         );
 
         //字体大小调节
-        mTvFontMinus.setOnClickListener(
-                (v) -> {
-                    if (mCbFontDefault.isChecked()) {
-                        mCbFontDefault.setChecked(false);
-                    }
-                    int fontSize = Integer.valueOf(mTvFont.getText().toString()) - 1;
-                    if (fontSize < 0) return;
-                    mTvFont.setText(fontSize + "");
-                    mPageLoader.setTextSize(fontSize);
-                }
+        mTvFontMinus.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+
+                                                if (mCbFontDefault.isChecked()) {
+                                                    mCbFontDefault.setChecked(false);
+                                                }
+                                                int fontSize = Integer.valueOf(mTvFont.getText().toString()) - 1;
+                                                if (fontSize < 0) return;
+                                                mTvFont.setText(fontSize + "");
+                                                mPageLoader.setTextSize(fontSize);
+                                            }
+                                        }
         );
 
-        mTvFontPlus.setOnClickListener(
-                (v) -> {
-                    if (mCbFontDefault.isChecked()) {
-                        mCbFontDefault.setChecked(false);
-                    }
-                    int fontSize = Integer.valueOf(mTvFont.getText().toString()) + 1;
-                    mTvFont.setText(fontSize + "");
-                    mPageLoader.setTextSize(fontSize);
-                }
+        mTvFontPlus.setOnClickListener(new View.OnClickListener() {
+                                           @Override
+                                           public void onClick(View v) {
+
+                                               if (mCbFontDefault.isChecked()) {
+                                                   mCbFontDefault.setChecked(false);
+                                               }
+                                               int fontSize = Integer.valueOf(mTvFont.getText().toString()) + 1;
+                                               mTvFont.setText(fontSize + "");
+                                               mPageLoader.setTextSize(fontSize);
+                                           }
+                                       }
         );
 
-        mCbFontDefault.setOnCheckedChangeListener(
-                (buttonView, isChecked) -> {
-                    if (isChecked) {
-                        int fontSize = ScreenUtils.dpToPx(DEFAULT_TEXT_SIZE);
-                        mTvFont.setText(fontSize + "");
-                        mPageLoader.setTextSize(fontSize);
-                    }
-                }
+        mCbFontDefault.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                                      @Override
+                                                      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                                                          if (isChecked) {
+                                                              int fontSize = ScreenUtils.dpToPx(mActivity, DEFAULT_TEXT_SIZE);
+                                                              mTvFont.setText(fontSize + "");
+                                                              mPageLoader.setTextSize(fontSize);
+                                                          }
+                                                      }
+                                                  }
         );
 
         //Page Mode 切换
-        mRgPageMode.setOnCheckedChangeListener(
-                (group, checkedId) -> {
-                    int pageMode = 0;
-                    switch (checkedId) {
-                        case R.id.read_setting_rb_simulation:
-                            pageMode = PageView.PAGE_MODE_SIMULATION;
-                            break;
-                        case R.id.read_setting_rb_cover:
-                            pageMode = PageView.PAGE_MODE_COVER;
-                            break;
-                        case R.id.read_setting_rb_slide:
-                            pageMode = PageView.PAGE_MODE_SLIDE;
-                            break;
-                        case R.id.read_setting_rb_scroll:
-                            pageMode = PageView.PAGE_MODE_SCROLL;
-                            break;
-                        case R.id.read_setting_rb_none:
-                            pageMode = PageView.PAGE_MODE_NONE;
-                            break;
-                    }
-                    mPageLoader.setPageMode(pageMode);
-                }
+        mRgPageMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                                                   @Override
+                                                   public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                                                       int pageMode = 0;
+                                                       if (checkedId == R.id.read_setting_rb_simulation) {
+                                                           pageMode = PageView.PAGE_MODE_SIMULATION;
+
+                                                       } else if (checkedId == R.id.read_setting_rb_cover) {
+                                                           pageMode = PageView.PAGE_MODE_COVER;
+
+                                                       } else if (checkedId == R.id.read_setting_rb_slide) {
+                                                           pageMode = PageView.PAGE_MODE_SLIDE;
+
+                                                       } else if (checkedId == R.id.read_setting_rb_scroll) {
+                                                           pageMode = PageView.PAGE_MODE_SCROLL;
+
+                                                       } else if (checkedId == R.id.read_setting_rb_none) {
+                                                           pageMode = PageView.PAGE_MODE_NONE;
+
+                                                       }
+                                                       mPageLoader.setPageMode(pageMode);
+                                                   }
+                                               }
         );
 
         //背景的点击事件
-        mReadBgAdapter.setOnItemClickListener((adapter, view, position) -> {
-            mPageLoader.setBgColor(position);
-            setReadBg(position);
-            adapter.notifyDataSetChanged();
+        mReadBgAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                mPageLoader.setBgColor(position);
+                setReadBg(position);
+                adapter.notifyDataSetChanged();
+            }
         });
 
     }

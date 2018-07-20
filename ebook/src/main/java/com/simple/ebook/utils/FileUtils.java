@@ -1,18 +1,22 @@
 package com.simple.ebook.utils;
 
+import android.content.Context;
 import android.os.Environment;
 
-import com.simple.ebook.base.BaseApplication;
+import com.simple.ebook.base.BookApplication;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -37,16 +41,32 @@ public class FileUtils {
     public static final String SUFFIX_PDF = ".pdf";
 
     //获取Cache文件夹
-    public static String getCachePath() {
+    public static String getCachePath(Context context) {
         if (isSdCardExist()) {
-            return BaseApplication.getContext()
+            return context
                     .getExternalCacheDir()
                     .getAbsolutePath();
         } else {
-            return BaseApplication.getContext()
+            return BookApplication.getContent()
                     .getCacheDir()
                     .getAbsolutePath();
         }
+    }
+
+    public static String getDownloadFilePath(Context context) {
+        if (isSdCardExist()) {
+            return context
+                    .getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+                    .getAbsolutePath();
+        } else {
+            return BookApplication.getContent()
+                    .getFilesDir()
+                    .getAbsolutePath();
+        }
+    }
+
+    public static String getBookCachePath(Context context) {
+        return getCachePath(context) + File.separator + "book";
     }
 
     //获取文件夹
@@ -153,22 +173,24 @@ public class FileUtils {
 
     //获取txt文件
     public static List<File> getTxtFiles(String filePath) {
-        List txtFiles = new ArrayList();
+        final List txtFiles = new ArrayList();
         File file = new File(filePath);
         //获取文件夹
-        File[] dirs = file.listFiles(
-                pathname -> {
-                    if (pathname.isDirectory() && !pathname.getName().startsWith(".")) {
-                        return true;
-                    }
-                    //获取txt文件
-                    else if (pathname.getName().endsWith(".txt")) {
-                        txtFiles.add(pathname);
-                        return false;
-                    } else {
-                        return false;
-                    }
-                }
+        File[] dirs = file.listFiles(new FileFilter() {
+                                         @Override
+                                         public boolean accept(File pathname) {
+                                             if (pathname.isDirectory() && !pathname.getName().startsWith(".")) {
+                                                 return true;
+                                             }
+                                             //获取txt文件
+                                             else if (pathname.getName().endsWith(".txt")) {
+                                                 txtFiles.add(pathname);
+                                                 return false;
+                                             } else {
+                                                 return false;
+                                             }
+                                         }
+                                     }
         );
         //遍历文件夹
         for (File dir : dirs) {
@@ -181,7 +203,7 @@ public class FileUtils {
     //由于遍历比较耗时
     public static Single<List<File>> getSDTxtFile() {
         //外部存储卡路径
-        String rootPath = Environment.getExternalStorageDirectory().getPath();
+        final String rootPath = Environment.getExternalStorageDirectory().getPath();
         return Single.create(new SingleOnSubscribe<List<File>>() {
             @Override
             public void subscribe(SingleEmitter<List<File>> e) throws Exception {
@@ -330,5 +352,71 @@ public class FileUtils {
             unzipFile(zipName, destinationDirectory + File.separatorChar
                     + zipName.substring(0, zipName.lastIndexOf(suffixZip)));
         }
+    }
+
+
+    /**
+     * 序列化对象
+     *
+     * @param path
+     * @param o
+     * @return
+     */
+    public static boolean serializeObject(String path, Object o) {
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(new FileOutputStream(path));
+            oos.writeObject(o);
+        } catch (FileNotFoundException e) {
+            return false;
+        } catch (IOException e) {
+            File file = new File(path);
+            if (file.exists() && file.isFile()) {
+                file.delete();
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            try {
+                if (oos != null) {
+                    oos.close();
+                }
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 反序列化对象
+     *
+     * @param path
+     * @return
+     */
+    public static Object unserializeObject(String path) {
+        File sectionFile = new File(path);
+        // 直接反序列化
+        if (!sectionFile.exists()) {
+            return null;
+        }
+        ObjectInputStream ois = null;
+        Object o = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(path));
+            o = ois.readObject();
+        } catch (Exception e) {
+            sectionFile.delete();
+            return null;
+        } finally {
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        return o;
     }
 }

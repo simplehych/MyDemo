@@ -7,8 +7,6 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.simple.ebook.base.BaseApplication;
-
 import java.lang.reflect.Method;
 
 /**
@@ -17,23 +15,23 @@ import java.lang.reflect.Method;
 
 public class ScreenUtils {
 
-    public static int dpToPx(int dp) {
-        DisplayMetrics metrics = getDisplayMetrics();
+    public static int dpToPx(Context context,int dp) {
+        DisplayMetrics metrics = getDisplayMetrics(context);
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, metrics);
     }
 
-    public static int pxToDp(int px) {
-        DisplayMetrics metrics = getDisplayMetrics();
+    public static int pxToDp(Context context,int px) {
+        DisplayMetrics metrics = getDisplayMetrics(context);
         return (int) (px / metrics.density);
     }
 
-    public static int spToPx(int sp) {
-        DisplayMetrics metrics = getDisplayMetrics();
+    public static int spToPx(Context context,int sp) {
+        DisplayMetrics metrics = getDisplayMetrics(context);
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics);
     }
 
-    public static int pxToSp(int px) {
-        DisplayMetrics metrics = getDisplayMetrics();
+    public static int pxToSp(Context context,int px) {
+        DisplayMetrics metrics = getDisplayMetrics(context);
         return (int) (px / metrics.scaledDensity);
     }
 
@@ -42,9 +40,9 @@ public class ScreenUtils {
      *
      * @return
      */
-    public static int[] getAppSize() {
+    public static int[] getAppSize(Context context) {
         int[] size = new int[2];
-        DisplayMetrics metrics = getDisplayMetrics();
+        DisplayMetrics metrics = getDisplayMetrics(context);
         size[0] = metrics.widthPixels;
         size[1] = metrics.heightPixels;
         return size;
@@ -70,8 +68,8 @@ public class ScreenUtils {
      *
      * @return
      */
-    public static int getStatusBarHeight() {
-        Resources resources = getContext().getResources();
+    public static int getStatusBarHeight(Context context) {
+        Resources resources = context.getResources();
         int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
         return resources.getDimensionPixelSize(resourceId);
     }
@@ -81,11 +79,11 @@ public class ScreenUtils {
      *
      * @return
      */
-    public static int getNavigationBarHeight() {
+    public static int getNavigationBarHeight(Context context) {
         int navigationBarHeight = 0;
-        Resources rs = getContext().getResources();
+        Resources rs = context.getResources();
         int id = rs.getIdentifier("navigation_bar_height", "dimen", "android");
-        if (id > 0 && hasNavigationBar()) {
+        if (id > 0 && hasNavigationBar(context)) {
             navigationBarHeight = rs.getDimensionPixelSize(id);
         }
         return navigationBarHeight;
@@ -96,9 +94,9 @@ public class ScreenUtils {
      *
      * @return
      */
-    private static boolean hasNavigationBar() {
+    private static boolean hasNavigationBar(Context context) {
         boolean hasNavigationBar = false;
-        Resources rs = getContext().getResources();
+        Resources rs = context.getResources();
         int id = rs.getIdentifier("config_showNavigationBar", "bool", "android");
         if (id > 0) {
             hasNavigationBar = rs.getBoolean(id);
@@ -117,14 +115,10 @@ public class ScreenUtils {
         return hasNavigationBar;
     }
 
-    public static DisplayMetrics getDisplayMetrics() {
-        DisplayMetrics metrics = getContext()
+    public static DisplayMetrics getDisplayMetrics(Context context) {
+        DisplayMetrics metrics = context
                 .getResources()
                 .getDisplayMetrics();
         return metrics;
-    }
-
-    private static Context getContext() {
-        return BaseApplication.getContext();
     }
 }

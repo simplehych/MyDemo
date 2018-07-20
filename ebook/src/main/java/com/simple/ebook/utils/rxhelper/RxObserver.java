@@ -1,12 +1,9 @@
 package com.simple.ebook.utils.rxhelper;
 
-import android.content.Context;
-
 import com.allen.library.RxHttpUtils;
 import com.allen.library.base.BaseDataObserver;
 import com.allen.library.bean.BaseData;
 import com.allen.library.utils.ToastUtils;
-import com.simple.ebook.base.BaseApplication;
 
 import io.reactivex.disposables.Disposable;
 
@@ -104,10 +101,5 @@ public abstract class RxObserver<T> extends BaseDataObserver<T> {
 //            LoadingHelper.getInstance().hideLoading();
         }
     }
-
-    private Context getContext() {
-        return BaseApplication.getContext();
-    }
-
 
 }

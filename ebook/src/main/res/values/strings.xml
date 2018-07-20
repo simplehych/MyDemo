@@ -19,9 +19,6 @@
     <string name="done">完成</string>
     <string name="theme">主题</string>
 
-    <string name="about">关于我</string>
-    <string name="about_me">Github：<a href="https://github.com/AldrichLL">AldrichLL</a></string>
-
 
     <!--file system-->
     <string name="wy.file.sub_count">%1$d 项</string>

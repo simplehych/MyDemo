@@ -13,7 +13,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 
 import com.simple.ebook.R;
-import com.simple.ebook.base.BaseApplication;
 import com.simple.ebook.base.Constant;
 import com.simple.ebook.bean.BookChapterBean;
 import com.simple.ebook.bean.BookRecordBean;
@@ -36,7 +35,9 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by newbiechen on 17-7-1.
@@ -59,6 +60,8 @@ public abstract class PageLoader {
     //默认的显示参数配置
     private static final int DEFAULT_TIP_SIZE = 12;
     private static final int EXTRA_TITLE_SIZE = 4;
+
+    protected Context mContext;
     //当前章节列表
     protected List<TxtChapter> mChapterList;
     //书本对象
@@ -141,9 +144,9 @@ public abstract class PageLoader {
     private boolean isNightMode;
 
     /*****************************init params*******************************/
-    public PageLoader(PageView pageView) {
+    public PageLoader(Context context, PageView pageView) {
         mPageView = pageView;
-
+        mContext = context;
         //初始化数据
         initData();
         //初始化画笔
@@ -153,9 +156,9 @@ public abstract class PageLoader {
     }
 
     private void initData() {
-        mSettingManager = ReadSettingManager.getInstance();
+        mSettingManager = ReadSettingManager.getInstance(mContext);
         mTextSize = mSettingManager.getTextSize();
-        mTitleSize = mTextSize + ScreenUtils.spToPx(EXTRA_TITLE_SIZE);
+        mTitleSize = mTextSize + ScreenUtils.spToPx(mContext, EXTRA_TITLE_SIZE);
         mPageMode = mSettingManager.getPageMode();
         isNightMode = mSettingManager.isNightMode();
         mBgTheme = mSettingManager.getReadBgTheme();
@@ -167,8 +170,8 @@ public abstract class PageLoader {
         }
 
         //初始化参数
-        mMarginWidth = ScreenUtils.dpToPx(DEFAULT_MARGIN_WIDTH);
-        mMarginHeight = ScreenUtils.dpToPx(DEFAULT_MARGIN_HEIGHT);
+        mMarginWidth = ScreenUtils.dpToPx(mContext, DEFAULT_MARGIN_WIDTH);
+        mMarginHeight = ScreenUtils.dpToPx(mContext, DEFAULT_MARGIN_HEIGHT);
         mTextInterval = mTextSize / 2;
         mTitleInterval = mTitleSize / 2;
         mTextPara = mTextSize; //段落间距由 text 的高度决定。
@@ -180,7 +183,7 @@ public abstract class PageLoader {
         mTipPaint = new Paint();
         mTipPaint.setColor(mTextColor);
         mTipPaint.setTextAlign(Paint.Align.LEFT);//绘制的起始点
-        mTipPaint.setTextSize(ScreenUtils.spToPx(DEFAULT_TIP_SIZE));//Tip默认的字体大小
+        mTipPaint.setTextSize(ScreenUtils.spToPx(mContext, DEFAULT_TIP_SIZE));//Tip默认的字体大小
         mTipPaint.setAntiAlias(true);
         mTipPaint.setSubpixelText(true);
 
@@ -318,7 +321,7 @@ public abstract class PageLoader {
         mTextInterval = mTextSize / 2;
         mTextPara = mTextSize;
 
-        mTitleSize = mTextSize + ScreenUtils.spToPx(EXTRA_TITLE_SIZE);
+        mTitleSize = mTextSize + ScreenUtils.spToPx(mContext, EXTRA_TITLE_SIZE);
         mTitleInterval = mTitleInterval / 2;
         mTitlePara = mTitleSize;
 
@@ -442,7 +445,7 @@ public abstract class PageLoader {
         mBookRecord.setPagePos(mCurPage.position);
 
         //存储到数据库
-        BookRecordHelper.getsInstance().saveRecordBook(mBookRecord);
+        BookRecordHelper.getsInstance(mContext).saveRecordBook(mBookRecord);
     }
 
     //打开书本，初始化书籍
@@ -451,7 +454,7 @@ public abstract class PageLoader {
         //init book record
 
         //从数据库取阅读数据
-        mBookRecord = BookRecordHelper.getsInstance()
+        mBookRecord = BookRecordHelper.getsInstance(mContext)
                 .findBookRecordById(mCollBook.get_id());
         if (mBookRecord == null) {
             mBookRecord = new BookRecordBean();
@@ -642,7 +645,7 @@ public abstract class PageLoader {
 
     void drawBackground(Bitmap bitmap, boolean isUpdate) {
         Canvas canvas = new Canvas(bitmap);
-        int tipMarginHeight = ScreenUtils.dpToPx(3);
+        int tipMarginHeight = ScreenUtils.dpToPx(mContext, 3);
         if (!isUpdate) {
             /****绘制背景****/
             canvas.drawColor(mPageBg);
@@ -671,7 +674,7 @@ public abstract class PageLoader {
         } else {
             //擦除区域
             mBgPaint.setColor(mPageBg);
-            canvas.drawRect(mDisplayWidth / 2, mDisplayHeight - mMarginHeight + ScreenUtils.dpToPx(2), mDisplayWidth, mDisplayHeight, mBgPaint);
+            canvas.drawRect(mDisplayWidth / 2, mDisplayHeight - mMarginHeight + ScreenUtils.dpToPx(mContext, 2), mDisplayWidth, mDisplayHeight, mBgPaint);
         }
         /******绘制电池********/
 
@@ -681,8 +684,8 @@ public abstract class PageLoader {
         int outFrameWidth = (int) mTipPaint.measureText("xxx");
         int outFrameHeight = (int) mTipPaint.getTextSize();
 
-        int polarHeight = ScreenUtils.dpToPx(6);
-        int polarWidth = ScreenUtils.dpToPx(2);
+        int polarHeight = ScreenUtils.dpToPx(mContext, 6);
+        int polarWidth = ScreenUtils.dpToPx(mContext, 2);
         int border = 1;
         int innerMargin = 1;
 
@@ -690,7 +693,7 @@ public abstract class PageLoader {
         int polarLeft = visibleRight - polarWidth;
         int polarTop = visibleBottom - (outFrameHeight + polarHeight) / 2;
         Rect polar = new Rect(polarLeft, polarTop, visibleRight,
-                polarTop + polarHeight - ScreenUtils.dpToPx(2));
+                polarTop + polarHeight - ScreenUtils.dpToPx(mContext, 2));
 
         mBatteryPaint.setStyle(Paint.Style.FILL);
         canvas.drawRect(polar, mBatteryPaint);
@@ -698,7 +701,7 @@ public abstract class PageLoader {
         //外框的制作
         int outFrameLeft = polarLeft - outFrameWidth;
         int outFrameTop = visibleBottom - outFrameHeight;
-        int outFrameBottom = visibleBottom - ScreenUtils.dpToPx(2);
+        int outFrameBottom = visibleBottom - ScreenUtils.dpToPx(mContext, 2);
         Rect outFrame = new Rect(outFrameLeft, outFrameTop, polarLeft, outFrameBottom);
 
         mBatteryPaint.setStyle(Paint.Style.STROKE);
@@ -717,7 +720,7 @@ public abstract class PageLoader {
         //底部的字显示的位置Y
         float y = mDisplayHeight - mTipPaint.getFontMetrics().bottom - tipMarginHeight;
         String time = StringUtils.dateConvert(System.currentTimeMillis(), Constant.FORMAT_TIME);
-        float x = outFrameLeft - mTipPaint.measureText(time) - ScreenUtils.dpToPx(4);
+        float x = outFrameLeft - mTipPaint.measureText(time) - ScreenUtils.dpToPx(mContext, 4);
         canvas.drawText(time, x, y, mTipPaint);
     }
 
@@ -861,7 +864,7 @@ public abstract class PageLoader {
     boolean prevChapter() {
         //判断是否上一章节为空
         if (mCurChapterPos - 1 < 0) {
-            ToastUtils.show("已经没有上一章了");
+            ToastUtils.show(mContext, "已经没有上一章了");
             return false;
         }
 
@@ -938,7 +941,7 @@ public abstract class PageLoader {
     boolean nextChapter() {
         //加载一章
         if (mCurChapterPos + 1 >= mChapterList.size()) {
-            ToastUtils.show("已经没有下一章了");
+            ToastUtils.show(mContext, "已经没有下一章了");
             return false;
         }
 
@@ -986,7 +989,7 @@ public abstract class PageLoader {
             return;
         }
         //判断下一章的文件是否存在
-        int nextChapter = mCurChapterPos + 1;
+        final int nextChapter = mCurChapterPos + 1;
 
         //如果之前正在加载则取消
         if (mPreLoadDisp != null) {
@@ -999,28 +1002,30 @@ public abstract class PageLoader {
             public void subscribe(ObservableEmitter<List<TxtPage>> e) throws Exception {
                 e.onNext(loadPageList(nextChapter));
             }
-        }).compose(RxUtils::toSimpleSingle).subscribe(new Observer<List<TxtPage>>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                mPreLoadDisp = d;
-            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<TxtPage>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        mPreLoadDisp = d;
+                    }
 
-            @Override
-            public void onNext(List<TxtPage> pages) {
-                mNextPageList = pages;
-            }
+                    @Override
+                    public void onNext(List<TxtPage> pages) {
+                        mNextPageList = pages;
+                    }
 
 
-            @Override
-            public void onError(Throwable e) {
-                //无视错误
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        //无视错误
+                    }
 
-            @Override
-            public void onComplete() {
+                    @Override
+                    public void onComplete() {
 
-            }
-        });
+                    }
+                });
 
         //调用异步进行预加载加载
 //        Single.create(new SingleOnSubscribe<List<TxtPage>>() {
@@ -1121,7 +1126,7 @@ public abstract class PageLoader {
      */
     private boolean checkStatus() {
         if (mStatus == STATUS_LOADING) {
-            ToastUtils.show("正在加载中，请稍等");
+            ToastUtils.show(mContext, "正在加载中，请稍等");
             return false;
         } else if (mStatus == STATUS_ERROR) {
             //点击重试
@@ -1152,6 +1157,6 @@ public abstract class PageLoader {
     }
 
     private Context getAppContext() {
-        return BaseApplication.getContext();
+        return mContext;
     }
 }

@@ -1,6 +1,8 @@
 package com.simple.ebook.widget.theme.page;
 
 
+import android.content.Context;
+
 import com.simple.ebook.base.Constant;
 import com.simple.ebook.bean.BookChapterBean;
 import com.simple.ebook.bean.CollBookBean;
@@ -21,14 +23,21 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.reactivex.ObservableSource;
+import io.reactivex.ObservableTransformer;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleOnSubscribe;
+import io.reactivex.SingleSource;
+import io.reactivex.SingleTransformer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by newbiechen on 17-7-1.
@@ -65,8 +74,8 @@ public class LocalPageLoader extends PageLoader {
 
     private Disposable mChapterDisp = null;
 
-    public LocalPageLoader(PageView pageView) {
-        super(pageView);
+    public LocalPageLoader(Context context, PageView pageView) {
+        super(context, pageView);
         mStatus = STATUS_PARSE;
     }
 
@@ -89,22 +98,29 @@ public class LocalPageLoader extends PageLoader {
         }
 
         isBookOpen = false;
+
+
         //通过RxJava异步处理分章事件
+
+
         Single.create(new SingleOnSubscribe<Void>() {
             @Override
             public void subscribe(SingleEmitter<Void> e) throws Exception {
                 loadBook(mBookFile);
                 e.onSuccess(null);
             }
-        }).compose(RxUtils::toSimpleSingle)
-                .subscribe(new SingleObserver<Void>() {
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Object>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         mChapterDisp = d;
+
                     }
 
                     @Override
-                    public void onSuccess(Void value) {
+                    public void onSuccess(Object o) {
                         mChapterDisp = null;
                         //提示目录加载完成
                         if (mPageChangeListener != null) {
@@ -118,7 +134,7 @@ public class LocalPageLoader extends PageLoader {
                     public void onError(Throwable e) {
                         //数据读取错误(弄个文章解析错误的Tip,会不会好一点)
                         mStatus = STATUS_ERROR;
-                        ToastUtils.show("数据解析错误");
+                        ToastUtils.show(mContext, "数据解析错误");
                     }
                 });
     }
@@ -426,7 +442,7 @@ public class LocalPageLoader extends PageLoader {
             mCollBook.setLastRead(StringUtils.
                     dateConvert(System.currentTimeMillis(), Constant.FORMAT_BOOK_DATE));
             //直接更新
-            CollBookHelper.getsInstance().saveBook(mCollBook);
+            CollBookHelper.getsInstance(mContext).saveBook(mCollBook);
         }
     }
 

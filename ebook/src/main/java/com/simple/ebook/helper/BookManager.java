@@ -1,5 +1,7 @@
 package com.simple.ebook.helper;
 
+import android.content.Context;
+
 import com.simple.ebook.utils.FileUtils;
 
 import java.io.File;
@@ -13,7 +15,7 @@ import java.util.Map;
 
 public class BookManager {
 
-    public static String BOOK_CACHE_PATH = FileUtils.getCachePath() + File.separator + "book_cache" + File.separator;
+    public static String BOOK_CACHE_PATH;
 
     private static final String TAG = "BookManager";
     private String chapterName;
@@ -23,11 +25,15 @@ public class BookManager {
     private Map<String, Cache> cacheMap = new HashMap<>();
     private static volatile BookManager sInstance;
 
-    public static BookManager getInstance() {
+    private BookManager(Context context) {
+        BOOK_CACHE_PATH = FileUtils.getBookCachePath(context) + File.separator + "cache" + File.separator;
+    }
+
+    public static BookManager getInstance(Context context) {
         if (sInstance == null) {
             synchronized (BookManager.class) {
                 if (sInstance == null) {
-                    sInstance = new BookManager();
+                    sInstance = new BookManager(context);
                 }
             }
         }
@@ -177,12 +183,12 @@ public class BookManager {
      * @param fileName
      * @return
      */
-    public static File getBookFile(String folderName, String fileName) {
+    public  File getBookFile(String folderName, String fileName) {
         return FileUtils.getFile(BOOK_CACHE_PATH + folderName
                 + File.separator + fileName + FileUtils.SUFFIX_WY);
     }
 
-    public static long getBookSize(String folderName) {
+    public long getBookSize(String folderName) {
         return FileUtils.getDirSize(FileUtils
                 .getFolder(BOOK_CACHE_PATH + folderName));
     }
@@ -195,7 +201,7 @@ public class BookManager {
      * @param fileName:  chapterName
      * @return
      */
-    public static boolean isChapterCached(String folderName, String fileName) {
+    public boolean isChapterCached(String folderName, String fileName) {
         File file = new File(BOOK_CACHE_PATH + folderName + File.separator + fileName + FileUtils.SUFFIX_WY);
         return file.exists();
     }

@@ -123,7 +123,7 @@ public class PageView extends View {
                 break;
             case PAGE_MODE_SCROLL:
                 mPageAnim = new ScrollPageAnim(mViewWidth, mViewHeight, 0,
-                        ScreenUtils.dpToPx(PageLoader.DEFAULT_MARGIN_HEIGHT),this,mPageAnimListener);
+                        ScreenUtils.dpToPx(getContext(),PageLoader.DEFAULT_MARGIN_HEIGHT),this,mPageAnimListener);
                 break;
             default:
                 mPageAnim = new SimulationPageAnim(mViewWidth, mViewHeight,this,mPageAnimListener);
@@ -346,13 +346,13 @@ public class PageView extends View {
     }
 
     //获取PageLoader
-    public PageLoader getPageLoader(boolean isLocal){
+    public PageLoader getPageLoader(Context context,boolean isLocal){
         if (mPageLoader == null){
             if (isLocal){
-                mPageLoader = new LocalPageLoader(this);
+                mPageLoader = new LocalPageLoader(context,this);
             }
             else {
-                mPageLoader = new NetPageLoader(this);
+                mPageLoader = new NetPageLoader(context,this);
             }
         }
         return mPageLoader;

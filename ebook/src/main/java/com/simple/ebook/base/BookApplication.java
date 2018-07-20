@@ -15,17 +15,17 @@ import okhttp3.logging.HttpLoggingInterceptor;
  * @author hych
  * @date 2018/7/9 14:26
  */
-public class BaseApplication extends Application {
+public class BookApplication extends Application {
     private static Application app;
 
     @Override
     public void onCreate() {
         super.onCreate();
         app = this;
-        initRxHttpUtils();
+//        initRxHttpUtils();
     }
 
-    public static Context getContext() {
+    public static Context getContent() {
         return app;
     }
 

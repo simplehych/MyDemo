@@ -1,5 +1,7 @@
 package com.simple.ebook.helper;
 
+import android.content.Context;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -32,8 +34,8 @@ public class BookSaveUtils {
      * @param fileName
      * @param content
      */
-    public void saveChapterInfo(String folderName, String fileName, String content) {
-        File file = BookManager.getBookFile(folderName, fileName);
+    public void saveChapterInfo(Context context,String folderName, String fileName, String content) {
+        File file = BookManager.getInstance(context).getBookFile(folderName, fileName);
         //获取流并存储
         Writer writer = null;
         try {

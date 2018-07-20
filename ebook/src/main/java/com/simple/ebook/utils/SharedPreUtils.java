@@ -3,7 +3,6 @@ package com.simple.ebook.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.simple.ebook.base.BaseApplication;
 import com.simple.ebook.widget.theme.Theme;
 
 /**
@@ -16,16 +15,16 @@ public class SharedPreUtils {
     private static SharedPreferences sharedReadable;
     private static SharedPreferences.Editor sharedWritable;
 
-    private SharedPreUtils() {
-        sharedReadable = BaseApplication.getContext().getSharedPreferences(SHARED_NAME, Context.MODE_MULTI_PROCESS);
+    private SharedPreUtils(Context context) {
+        sharedReadable = context.getSharedPreferences(SHARED_NAME, Context.MODE_MULTI_PROCESS);
         sharedWritable = sharedReadable.edit();
     }
 
-    public static SharedPreUtils getInstance() {
+    public static SharedPreUtils getInstance(Context context) {
         if (sInstance == null) {
             synchronized (SharedPreUtils.class) {
                 if (sInstance == null) {
-                    sInstance = new SharedPreUtils();
+                    sInstance = new SharedPreUtils(context);
                 }
             }
         }

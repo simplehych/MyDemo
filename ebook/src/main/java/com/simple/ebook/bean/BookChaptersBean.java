@@ -1,17 +1,20 @@
 package com.simple.ebook.bean;
 
+import java.io.Serializable;
 import java.util.List;
+
+import nl.siegmann.epublib.domain.Resource;
 
 /**
  * Created by Liang_Lu on 2017/12/11.
  */
 
-public class BookChaptersBean {
+public class BookChaptersBean implements Serializable{
 
     private String _id;
     private String source;
     private String book;
-    private List<ChatpterBean> chapters;
+    private List<ChapterBean> chapters;
 
     public String get_id() {
         return _id;
@@ -37,19 +40,21 @@ public class BookChaptersBean {
         this.book = book;
     }
 
-    public List<ChatpterBean> getChapters() {
+    public List<ChapterBean> getChapters() {
         return chapters;
     }
 
-    public void setChapters(List<ChatpterBean> chapters) {
+    public void setChapters(List<ChapterBean> chapters) {
         this.chapters = chapters;
     }
 
-    public static class ChatpterBean {
+    public static class ChapterBean implements Serializable{
         private boolean isVip;
         private String link;
         private String title;
         private String _id;
+        private String order;
+        private Resource resource;
         private boolean isRead;
 
         public boolean isRead() {
@@ -90,6 +95,22 @@ public class BookChaptersBean {
 
         public void set_id(String _id) {
             this._id = _id;
+        }
+
+        public String getOrder() {
+            return order;
+        }
+
+        public void setOrder(String order) {
+            this.order = order;
+        }
+
+        public Resource getResource() {
+            return resource;
+        }
+
+        public void setResource(Resource resource) {
+            this.resource = resource;
         }
     }
 

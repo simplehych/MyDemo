@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.outWidth = 960 / 2;
         options.outHeight = 960 / 2;
+
     }
 
 }

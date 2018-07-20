@@ -1,8 +1,7 @@
 package com.simple.ebook.utils;
 
+import android.content.Context;
 import android.support.annotation.StringRes;
-
-import com.simple.ebook.base.BaseApplication;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -81,12 +80,12 @@ public class StringUtils {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
-    public static String getString(@StringRes int id) {
-        return BaseApplication.getContext().getResources().getString(id);
+    public static String getString(Context context,@StringRes int id) {
+        return context.getResources().getString(id);
     }
 
-    public static String getString(@StringRes int id, Object... formatArgs) {
-        return BaseApplication.getContext().getResources().getString(id, formatArgs);
+    public static String getString(Context context,@StringRes int id, Object... formatArgs) {
+        return context.getResources().getString(id, formatArgs);
     }
 
     /**

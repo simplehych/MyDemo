@@ -65,11 +65,11 @@ public class CollBookBean implements Serializable {
 //            BookChapterBeanDao targetDao = daoSession.getBookChapterBeanDao();
 //            List<BookChapterBean> bookChapterListNew = targetDao
 //                    ._queryCollBookBean_BookChapterList(_id);
-//            synchronized (this) {
-//                if (bookChapterList == null) {
+            synchronized (this) {
+                if (bookChapterList == null) {
 //                    bookChapterList = bookChapterListNew;
-//                }
-//            }
+                }
+            }
         }
         return bookChapterList;
     }
@@ -79,18 +79,19 @@ public class CollBookBean implements Serializable {
     }
 
 
-    public void setBookChapters(List<BookChapterBean> beans) {
+    public void setBookChapters(List<BookChapterBean> beans){
         bookChapterList = beans;
 //        for (BookChapterBean bean : bookChapterList){
 //            bean.setBookId(get_id());
 //        }
     }
 
-    public List<BookChapterBean> getBookChapters() {
-//        if (daoSession == null) {
+    public List<BookChapterBean> getBookChapters(){
+//        if (daoSession == null){
 //            return bookChapterList;
-//        } else {
-        return getBookChapterList();
+//        }
+//        else {
+            return getBookChapterList();
 //        }
     }
 
@@ -225,36 +226,5 @@ public class CollBookBean implements Serializable {
     public void setIsLocal(boolean isLocal) {
         this.isLocal = isLocal;
     }
-
-    public synchronized void resetBookChapterList() {
-        bookChapterList = null;
-    }
-
-    public void delete() {
-//        if (myDao == null) {
-//            throw new DaoException("Entity is detached from DAO context");
-//        }
-//        myDao.delete(this);
-    }
-
-    public void refresh() {
-//        if (myDao == null) {
-//            throw new DaoException("Entity is detached from DAO context");
-//        }
-//        myDao.refresh(this);
-    }
-
-    public void update() {
-//        if (myDao == null) {
-//            throw new DaoException("Entity is detached from DAO context");
-//        }
-//        myDao.update(this);
-    }
-
-//    public void __setDaoSession(DaoSession daoSession) {
-//        this.daoSession = daoSession;
-//        myDao = daoSession != null ? daoSession.getCollBookBeanDao() : null;
-//    }
-
 
 }

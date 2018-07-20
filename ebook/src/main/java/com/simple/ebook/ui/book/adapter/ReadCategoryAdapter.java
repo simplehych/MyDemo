@@ -1,4 +1,4 @@
-package com.simple.ebook.ui.adapter;
+package com.simple.ebook.ui.book.adapter;
 
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;

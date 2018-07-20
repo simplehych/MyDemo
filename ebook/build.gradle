@@ -1,15 +1,14 @@
-apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.android.library'
+//apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
 
 
     defaultConfig {
-        applicationId "com.simple.ebook"
-        minSdkVersion 16
-        targetSdkVersion 27
+        minSdkVersion 17
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
 
@@ -27,9 +26,9 @@ android {
         }
     }
 
-    dataBinding {
-        enabled = true
-    }
+//    dataBinding {
+//        enabled = true
+//    }
 
 //    compileOptions {
 //        sourceCompatibility JavaVersion.VERSION_1_8
@@ -43,34 +42,24 @@ android {
         }
     }
 
-    compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
-    }
+//    compileOptions {
+//        targetCompatibility 1.8
+//        sourceCompatibility 1.8
+//    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:27.1.0'
-    compile "com.android.support:design:27.1.0"
-    compile "com.android.support:support-vector-drawable:27.1.0"
-    testCompile 'junit:junit:4.12'
-    androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-
-    /**
-     *   butterknife
-     */
-    compile "com.jakewharton:butterknife:8.8.1"
-    annotationProcessor "com.jakewharton:butterknife-compiler:8.8.1"
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile "com.android.support:design:25.3.1"
+    compile "com.android.support:support-vector-drawable:25.3.1"
 
     /**
      *   Glide
      */
-    compile "com.github.bumptech.glide:glide:4.0.0"
-    //glide样式（圆角、圆、毛玻璃）
-    compile "jp.wasabeef:glide-transformations:3.1.1"
+//    compile "com.github.bumptech.glide:glide:4.0.0"
+//    //glide样式（圆角、圆、毛玻璃）
+//    compile "jp.wasabeef:glide-transformations:3.1.1"
 
     /**
      *    rxpermissions
@@ -80,8 +69,12 @@ dependencies {
     /**
      *   rxlifecycle
      */
-    compile "com.trello.rxlifecycle2:rxlifecycle:2.2.0"
-    compile "com.trello.rxlifecycle2:rxlifecycle-components:2.2.0"
+    compile("com.trello.rxlifecycle2:rxlifecycle:2.2.0") {
+        exclude group: 'com.android.support'
+    }
+    compile("com.trello.rxlifecycle2:rxlifecycle-components:2.2.0") {
+        exclude group: 'com.android.support'
+    }
 
     /**
      *   systembartint
@@ -98,7 +91,11 @@ dependencies {
      */
     compile "com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30"
 
-    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:+'
+//    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:+'
 
     compile 'org.jsoup:jsoup:1.11.3'
+
+    compile(group: 'com.positiondev.epublib', name: 'epublib-core', version: '3.1') {
+        exclude group: 'net.sf.kxml'
+    }
 }

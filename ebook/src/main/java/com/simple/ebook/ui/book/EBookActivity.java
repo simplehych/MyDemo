@@ -1,6 +1,5 @@
-package com.simple.ebook.ui;
+package com.simple.ebook.ui.book;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -14,9 +13,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -29,71 +30,56 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.simple.ebook.Interfaces.IBookChapters;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.simple.ebook.R;
-import com.simple.ebook.base.BaseActivity;
 import com.simple.ebook.bean.BookChapterBean;
 import com.simple.ebook.bean.BookChaptersBean;
 import com.simple.ebook.bean.CollBookBean;
 import com.simple.ebook.helper.BookChapterHelper;
-import com.simple.ebook.ui.adapter.ReadCategoryAdapter;
-import com.simple.ebook.utils.BrightnessUtils;
 import com.simple.ebook.helper.ReadSettingManager;
+import com.simple.ebook.ui.book.adapter.ReadCategoryAdapter;
+import com.simple.ebook.utils.BrightnessUtils;
+import com.simple.ebook.utils.FileUtils;
 import com.simple.ebook.utils.ScreenUtils;
 import com.simple.ebook.utils.StatusBarUtils;
 import com.simple.ebook.utils.StringUtils;
-import com.simple.ebook.utils.rxhelper.RxUtils;
 import com.simple.ebook.widget.dialog.ReadSettingDialog;
 import com.simple.ebook.widget.theme.page.NetPageLoader;
 import com.simple.ebook.widget.theme.page.PageLoader;
 import com.simple.ebook.widget.theme.page.PageView;
 import com.simple.ebook.widget.theme.page.TxtChapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.OnClick;
-import io.reactivex.disposables.Disposable;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class ReadActivity extends BaseActivity implements IBookChapters {
-    //    @BindView(R.id.read_tv_brief)
-//    TextView mReadTvBrief;
-//    @BindView(R.id.read_tv_community)
-//    TextView mReadTvCommunity;
-    @BindView(R.id.tv_toolbar_title)
+/**
+ * @author hych
+ * @date 2018/7/16 14:38
+ */
+public class EBookActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final String TAG = "EBookActivity";
+    public static final String PARAM_EBOOK_EPUB_PATH = "param_book_epub_path";
+
     TextView mTvToolbarTitle;
-    @BindView(R.id.read_abl_top_menu)
     AppBarLayout mReadAblTopMenu;
-    @BindView(R.id.pv_read_page)
     PageView mPvReadPage;
-    @BindView(R.id.read_tv_page_tip)
     TextView mReadTvPageTip;
-    @BindView(R.id.read_tv_pre_chapter)
     TextView mReadTvPreChapter;
-    @BindView(R.id.read_sb_chapter_progress)
     SeekBar mReadSbChapterProgress;
-    @BindView(R.id.read_tv_next_chapter)
     TextView mReadTvNextChapter;
-    @BindView(R.id.read_tv_category)
     TextView mReadTvCategory;
-    @BindView(R.id.read_tv_night_mode)
     TextView mReadTvNightMode;
-    @BindView(R.id.read_tv_setting)
     TextView mReadTvSetting;
-    @BindView(R.id.read_ll_bottom_menu)
     LinearLayout mReadLlBottomMenu;
-    @BindView(R.id.rv_read_category)
     RecyclerView mRvReadCategory;
-    @BindView(R.id.read_dl_slide)
     DrawerLayout mReadDlSlide;
 
 
-    private static final String TAG = "ReadActivity";
-    public static final int REQUEST_MORE_SETTING = 1;
     //注册 Brightness 的 uri
     private final Uri BRIGHTNESS_MODE_URI =
             Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS_MODE);
@@ -102,33 +88,28 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
     private final Uri BRIGHTNESS_ADJ_URI =
             Settings.System.getUriFor("screen_auto_brightness_adj");
 
-    public static final String EXTRA_COLL_BOOK = "extra_coll_book";
-    public static final String EXTRA_IS_COLLECTED = "extra_is_collected";
 
     private boolean isRegistered = false;
 
     /*****************view******************/
+    private ReadCategoryAdapter mReadCategoryAdapter;
     private ReadSettingDialog mSettingDialog;
     private PageLoader mPageLoader;
     private Animation mTopInAnim;
     private Animation mTopOutAnim;
     private Animation mBottomInAnim;
     private Animation mBottomOutAnim;
-    //    private CategoryAdapter mCategoryAdapter;
-    private CollBookBean mCollBook;
+
     //控制屏幕常亮
     private PowerManager.WakeLock mWakeLock;
 
     /***************params*****************/
-    private boolean isCollected = false; //isFromSDCard
     private boolean isNightMode = false;
     private boolean isFullScreen = false;
-    private String mBookId;
-    ReadCategoryAdapter mReadCategoryAdapter;
     List<TxtChapter> mTxtChapters = new ArrayList<>();
-    private BookContentModel mVmContentInfo;
+    private String mBookEPubPath;
+    private EBookModel mModel;
     List<BookChapterBean> bookChapterList = new ArrayList<>();
-
 
     // 接收电池信息和时间更新的广播
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -159,17 +140,19 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
             super.onChange(selfChange);
 
             //判断当前是否跟随屏幕亮度，如果不是则返回
-            if (selfChange || !mSettingDialog.isBrightFollowSystem()) return;
+            if (selfChange || !mSettingDialog.isBrightFollowSystem()) {
+                return;
+            }
 
             //如果系统亮度改变，则修改当前 Activity 亮度
             if (BRIGHTNESS_MODE_URI.equals(uri)) {
                 Log.d(TAG, "亮度模式改变");
-            } else if (BRIGHTNESS_URI.equals(uri) && !BrightnessUtils.isAutoBrightness(ReadActivity.this)) {
+            } else if (BRIGHTNESS_URI.equals(uri) && !BrightnessUtils.isAutoBrightness(EBookActivity.this)) {
                 Log.d(TAG, "亮度模式为手动模式 值改变");
-                BrightnessUtils.setBrightness(ReadActivity.this, BrightnessUtils.getScreenBrightness(ReadActivity.this));
-            } else if (BRIGHTNESS_ADJ_URI.equals(uri) && BrightnessUtils.isAutoBrightness(ReadActivity.this)) {
+                BrightnessUtils.setBrightness(EBookActivity.this, BrightnessUtils.getScreenBrightness(EBookActivity.this));
+            } else if (BRIGHTNESS_ADJ_URI.equals(uri) && BrightnessUtils.isAutoBrightness(EBookActivity.this)) {
                 Log.d(TAG, "亮度模式为自动模式 值改变");
-                BrightnessUtils.setBrightness(ReadActivity.this, BrightnessUtils.getScreenBrightness(ReadActivity.this));
+                BrightnessUtils.setBrightness(EBookActivity.this, BrightnessUtils.getScreenBrightness(EBookActivity.this));
             } else {
                 Log.d(TAG, "亮度调整 其他");
             }
@@ -178,27 +161,44 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mVmContentInfo = new VMBookContentInfoLocal(mContext, this);
-        setBinddingView(R.layout.activity_read, NO_BINDDING, mVmContentInfo);
 
+        mBookEPubPath = getIntent().getStringExtra(PARAM_EBOOK_EPUB_PATH);
+
+        setContentView(R.layout.activity_read);
+        initView();
     }
 
-    @Override
-    protected void initView() {
-        super.initView();
-        mCollBook = (CollBookBean) getIntent().getSerializableExtra(EXTRA_COLL_BOOK);
-        isCollected = getIntent().getBooleanExtra(EXTRA_IS_COLLECTED, false);
-        isNightMode = ReadSettingManager.getInstance().isNightMode();
-        isFullScreen = ReadSettingManager.getInstance().isFullScreen();
-        mBookId = mCollBook.get_id();
+    private void initView() {
+        mTvToolbarTitle = (TextView) findViewById(R.id.tv_toolbar_title);
+        mReadAblTopMenu = (AppBarLayout) findViewById(R.id.read_abl_top_menu);
+        mPvReadPage = (PageView) findViewById(R.id.pv_read_page);
+        mReadTvPageTip = (TextView) findViewById(R.id.read_tv_page_tip);
+        mReadTvPreChapter = (TextView) findViewById(R.id.read_tv_pre_chapter);
+        mReadSbChapterProgress = (SeekBar) findViewById(R.id.read_sb_chapter_progress);
+        mReadTvNextChapter = (TextView) findViewById(R.id.read_tv_next_chapter);
+        mReadTvCategory = (TextView) findViewById(R.id.read_tv_category);
+        mReadTvNightMode = (TextView) findViewById(R.id.read_tv_night_mode);
+        mReadTvSetting = (TextView) findViewById(R.id.read_tv_setting);
+        mReadLlBottomMenu = (LinearLayout) findViewById(R.id.read_ll_bottom_menu);
+        mRvReadCategory = (RecyclerView) findViewById(R.id.rv_read_category);
+        mReadDlSlide = (DrawerLayout) findViewById(R.id.read_dl_slide);
+        mReadTvPreChapter.setOnClickListener(this);
+        mReadTvNextChapter.setOnClickListener(this);
+        mReadTvCategory.setOnClickListener(this);
+        mReadTvNightMode.setOnClickListener(this);
+        mReadTvSetting.setOnClickListener(this);
+        mTvToolbarTitle.setOnClickListener(this);
 
-        mTvToolbarTitle.setText(mCollBook.getTitle());
+        isNightMode = ReadSettingManager.getInstance(this).isNightMode();
+        isFullScreen = ReadSettingManager.getInstance(this).isFullScreen();
+
+        mTvToolbarTitle.setText("");
         StatusBarUtils.transparencyBar(this);
         //获取页面加载器
 
-        mPageLoader = mPvReadPage.getPageLoader(mCollBook.isLocal());
+        mPageLoader = mPvReadPage.getPageLoader(this, false);
         mReadDlSlide.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
 
@@ -220,18 +220,22 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
         registerReceiver(mReceiver, intentFilter);
 
         //设置当前Activity的Brightness
-        if (ReadSettingManager.getInstance().isBrightnessAuto()) {
+        if (ReadSettingManager.getInstance(this).isBrightnessAuto()) {
             BrightnessUtils.setBrightness(this, BrightnessUtils.getScreenBrightness(this));
         } else {
-            BrightnessUtils.setBrightness(this, ReadSettingManager.getInstance().getBrightness());
+            BrightnessUtils.setBrightness(this, ReadSettingManager.getInstance(this).getBrightness());
         }
 
         //初始化屏幕常亮类
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "keep bright");
         //隐藏StatusBar
-        mPvReadPage.post(
-                () -> hideSystemBar()
+        mPvReadPage.post(new Runnable() {
+                             @Override
+                             public void run() {
+                                 hideSystemBar();
+                             }
+                         }
         );
 
         //初始化TopMenu
@@ -250,7 +254,7 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
 
             @Override
             public void onLoadChapter(List<TxtChapter> chapters, int pos) {
-                mVmContentInfo.loadContent(mBookId, chapters);
+                mModel.loadContent(mBookEPubPath, chapters);
                 setCategorySelect(mPageLoader.getChapterPos());
 
                 if (mPageLoader.getPageStatus() == NetPageLoader.STATUS_LOADING
@@ -279,13 +283,15 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
             }
 
             @Override
-            public void onPageChange(int pos) {
-                mReadSbChapterProgress.post(() -> {
-                    mReadSbChapterProgress.setProgress(pos);
+            public void onPageChange(final int pos) {
+                mReadSbChapterProgress.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mReadSbChapterProgress.setProgress(pos);
+                    }
                 });
             }
         });
-
 
         mReadSbChapterProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -342,32 +348,12 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
     }
 
     private void initData() {
-        if (mCollBook.isLocal()) {
-            mPageLoader.openBook(mCollBook);
-        } else {
-            //如果是网络文件
-            //如果是已经收藏的，那么就从数据库中获取目录
-            if (isCollected) {
-                Disposable disposable = BookChapterHelper.getsInstance().findBookChaptersInRx(mBookId)
-                        .compose(RxUtils::toSimpleSingle)
-                        .subscribe(beans -> {
-                            mCollBook.setBookChapters(beans);
-                            mPageLoader.openBook(mCollBook);
-                            //如果是被标记更新的,重新从网络中获取目录
-                            if (mCollBook.isUpdate()) {
-                                mVmContentInfo.loadChapters(mBookId);
-                            }
-                        });
-                mVmContentInfo.addDisposadle(disposable);
-            } else {
-                //加载书籍目录
-                mVmContentInfo.loadChapters(mBookId);
-            }
-        }
+        mModel = new EBookModel(this);
+        mModel.loadChapters(mBookEPubPath);
     }
 
     private void setCategory() {
-        mRvReadCategory.setLayoutManager(new LinearLayoutManager(mContext));
+        mRvReadCategory.setLayoutManager(new LinearLayoutManager(this));
         mReadCategoryAdapter = new ReadCategoryAdapter(mTxtChapters);
         mRvReadCategory.setAdapter(mReadCategoryAdapter);
 
@@ -375,10 +361,13 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
             setCategorySelect(0);
         }
 
-        mReadCategoryAdapter.setOnItemClickListener((adapter, view, position) -> {
-            setCategorySelect(position);
-            mReadDlSlide.closeDrawer(Gravity.START);
-            mPageLoader.skipToChapter(position);
+        mReadCategoryAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                setCategorySelect(position);
+                mReadDlSlide.closeDrawer(Gravity.START);
+                mPageLoader.skipToChapter(position);
+            }
         });
 
     }
@@ -403,11 +392,11 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
 
     private void toggleNightMode() {
         if (isNightMode) {
-            mReadTvNightMode.setText(StringUtils.getString(R.string.wy_mode_morning));
+            mReadTvNightMode.setText(StringUtils.getString(this, R.string.wy_mode_morning));
             Drawable drawable = ContextCompat.getDrawable(this, R.mipmap.read_menu_morning);
             mReadTvNightMode.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
         } else {
-            mReadTvNightMode.setText(StringUtils.getString(R.string.wy_mode_night));
+            mReadTvNightMode.setText(StringUtils.getString(this, R.string.wy_mode_night));
             Drawable drawable = ContextCompat.getDrawable(this, R.mipmap.read_menu_night);
             mReadTvNightMode.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
         }
@@ -431,16 +420,16 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
 
     private void initTopMenu() {
         if (Build.VERSION.SDK_INT >= 19) {
-            mReadAblTopMenu.setPadding(0, ScreenUtils.getStatusBarHeight(), 0, 0);
+            mReadAblTopMenu.setPadding(0, ScreenUtils.getStatusBarHeight(this), 0, 0);
         }
     }
 
     private void initBottomMenu() {
         //判断是否全屏
-        if (ReadSettingManager.getInstance().isFullScreen()) {
+        if (ReadSettingManager.getInstance(this).isFullScreen()) {
             //还需要设置mBottomMenu的底部高度
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) mReadLlBottomMenu.getLayoutParams();
-            params.bottomMargin = ScreenUtils.getNavigationBarHeight();
+            params.bottomMargin = ScreenUtils.getNavigationBarHeight(this);
             mReadLlBottomMenu.setLayoutParams(params);
         } else {
             //设置mBottomMenu的底部距离
@@ -497,9 +486,10 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
     }
 
 
-    //初始化菜单动画
     private void initMenuAnim() {
-        if (mTopInAnim != null) return;
+        if (mTopInAnim != null) {
+            return;
+        }
 
         mTopInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_top_in);
         mTopOutAnim = AnimationUtils.loadAnimation(this, R.anim.slide_top_out);
@@ -510,60 +500,9 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
         mBottomOutAnim.setDuration(200);
     }
 
-
-    @OnClick({R.id.read_tv_pre_chapter, R.id.read_tv_next_chapter, R.id.read_tv_category,
-            R.id.read_tv_night_mode, R.id.read_tv_setting, R.id.tv_toolbar_title})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.read_tv_pre_chapter:
-                setCategorySelect(mPageLoader.skipPreChapter());
-                break;
-            case R.id.read_tv_next_chapter:
-                setCategorySelect(mPageLoader.skipNextChapter());
-                break;
-            case R.id.read_tv_category:
-                setCategorySelect(mPageLoader.getChapterPos());
-                //切换菜单
-                toggleMenu(true);
-                //打开侧滑动栏
-                mReadDlSlide.openDrawer(Gravity.START);
-                break;
-            case R.id.read_tv_night_mode:
-                if (isNightMode) {
-                    isNightMode = false;
-                } else {
-                    isNightMode = true;
-                }
-                mPageLoader.setNightMode(isNightMode);
-                toggleNightMode();
-                break;
-            case R.id.read_tv_setting:
-                toggleMenu(false);
-                mSettingDialog.show();
-                break;
-            case R.id.tv_toolbar_title:
-                finish();
-                break;
-            default:
-                break;
-        }
-    }
-
-
-    @Override
-    public void showLoading() {
-
-    }
-
-    @Override
-    public void stopLoading() {
-
-    }
-
-    @Override
     public void bookChapters(BookChaptersBean bookChaptersBean) {
         bookChapterList.clear();
-        for (BookChaptersBean.ChatpterBean bean : bookChaptersBean.getChapters()) {
+        for (BookChaptersBean.ChapterBean bean : bookChaptersBean.getChapters()) {
             BookChapterBean chapterBean = new BookChapterBean();
             chapterBean.setBookId(bookChaptersBean.getBook());
             chapterBean.setLink(bean.getLink());
@@ -572,40 +511,38 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
             chapterBean.setUnreadble(bean.isRead());
             bookChapterList.add(chapterBean);
         }
-        mCollBook.setBookChapters(bookChapterList);
+        CollBookBean collBookBean = new CollBookBean();
+        collBookBean.setBookChapters(bookChapterList);
+        File eBookEPubFile = new File(mBookEPubPath);
+        collBookBean.set_id(eBookEPubFile.getName());
 
-        //如果是更新加载，那么重置PageLoader的Chapter
-        if (mCollBook.isUpdate() && isCollected) {
-            mPageLoader.setChapterList(bookChapterList);
-            //异步下载更新的内容存到数据库
-            //TODO
-            BookChapterHelper.getsInstance().saveBookChaptersWithAsync(bookChapterList);
-
-        } else {
-            mPageLoader.openBook(mCollBook);
-        }
+        mPageLoader.openBook(collBookBean);
 
 
+//        mPageLoader.setChapterList(bookChapterList);
+        //异步下载更新的内容存到数据库
+        //TODO
+        BookChapterHelper.getsInstance(this).saveBookChaptersWithAsync(bookChapterList);
     }
 
-    @Override
     public void finishChapters() {
         if (mPageLoader.getPageStatus() == PageLoader.STATUS_LOADING) {
-            mPvReadPage.post(() -> {
-                mPageLoader.openChapter();
+            mPvReadPage.post(new Runnable() {
+                @Override
+                public void run() {
+                    mPageLoader.openChapter();
+                }
             });
         }
         //当完成章节的时候，刷新列表
         mReadCategoryAdapter.notifyDataSetChanged();
     }
 
-    @Override
     public void errorChapters() {
         if (mPageLoader.getPageStatus() == PageLoader.STATUS_LOADING) {
             mPageLoader.chapterError();
         }
     }
-
 
     //注册亮度观察者
     private void registerBrightObserver() {
@@ -644,7 +581,7 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
     public void onBackPressed() {
         if (mReadAblTopMenu.getVisibility() == View.VISIBLE) {
             //非全屏下才收缩，全屏下直接退出
-            if (!ReadSettingManager.getInstance().isFullScreen()) {
+            if (!ReadSettingManager.getInstance(this).isFullScreen()) {
                 toggleMenu(true);
                 return;
             }
@@ -657,16 +594,6 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
         }
 
 
-        super.onBackPressed();
-    }
-
-    //退出
-    private void exit() {
-        //返回给BookDetail。
-        Intent result = new Intent();
-//        result.putExtra(BookDetailActivity.RESULT_IS_COLLECTED, isCollected);
-        setResult(Activity.RESULT_OK, result);
-        //退出
         super.onBackPressed();
     }
 
@@ -686,9 +613,7 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
     protected void onPause() {
         super.onPause();
         mWakeLock.release();
-        if (isCollected) {
-            mPageLoader.saveRecord();
-        }
+        mPageLoader.saveRecord();
     }
 
     @Override
@@ -700,9 +625,46 @@ public class ReadActivity extends BaseActivity implements IBookChapters {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mModel != null) {
+            mModel.onDestroy();
+        }
         unregisterReceiver(mReceiver);
         mPageLoader.closeBook();
     }
 
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.read_tv_pre_chapter) {
+            setCategorySelect(mPageLoader.skipPreChapter());
 
+        } else if (i == R.id.read_tv_next_chapter) {
+            setCategorySelect(mPageLoader.skipNextChapter());
+
+        } else if (i == R.id.read_tv_category) {
+            setCategorySelect(mPageLoader.getChapterPos());
+            //切换菜单
+            toggleMenu(true);
+            //打开侧滑动栏
+            mReadDlSlide.openDrawer(Gravity.START);
+
+        } else if (i == R.id.read_tv_night_mode) {
+            if (isNightMode) {
+                isNightMode = false;
+            } else {
+                isNightMode = true;
+            }
+            mPageLoader.setNightMode(isNightMode);
+            toggleNightMode();
+
+        } else if (i == R.id.read_tv_setting) {
+            toggleMenu(false);
+            mSettingDialog.show();
+
+        } else if (i == R.id.tv_toolbar_title) {
+            finish();
+
+        } else {
+        }
+    }
 }

@@ -1,9 +1,6 @@
 package com.simple.ebook.utils.rxhelper;
 
 import android.util.Log;
-import android.widget.Toast;
-
-import com.simple.ebook.base.BaseApplication;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -56,6 +53,6 @@ public class RxException<T extends Throwable> implements Consumer<T> {
     }
 
     private void show(String msg) {
-        Toast.makeText(BaseApplication.getContext(), msg, Toast.LENGTH_SHORT).show();
+//        ToastUtils.show(msg);
     }
 }

@@ -1,9 +1,11 @@
 package com.simple.ebook.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by LiangLu on 17-11-22.
  */
-public class BookRecordBean {
+public class BookRecordBean implements Serializable{
 
     //所属的书的id
     private String bookId;
