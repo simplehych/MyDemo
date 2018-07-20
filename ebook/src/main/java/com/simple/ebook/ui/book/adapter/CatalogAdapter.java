@@ -17,11 +17,11 @@ import java.util.List;
  * Created by Liang_Lu on 2017/11/24.
  */
 
-public class ReadCategoryAdapter extends BaseQuickAdapter<TxtChapter, BaseViewHolder> {
+public class CatalogAdapter extends BaseQuickAdapter<TxtChapter, BaseViewHolder> {
 
 
-    public ReadCategoryAdapter(@Nullable List<TxtChapter> data) {
-        super(R.layout.item_category, data);
+    public CatalogAdapter(@Nullable List<TxtChapter> data) {
+        super(R.layout.item_catalog, data);
     }
 
     @Override

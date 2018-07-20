@@ -52,7 +52,7 @@ public class EBookModel extends BaseViewModel {
 
     private String TAG = getClass().getSimpleName();
     private String EBOOK_UNZIP_PATH;
-    private final String EBOOK_TOC = "toc.my";
+    public final String EBOOK_TOC = "toc.my";
 
     private EBookActivity mEBookActivity;
     Disposable mDisposable;
@@ -80,6 +80,11 @@ public class EBookModel extends BaseViewModel {
                     if (eBookUnzipFile.exists()) {
                         if (eBookUnzipTOCFile.exists()) {
                             bookChaptersBean = (BookChaptersBean) FileUtils.unserializeObject(eBookUnzipTOCFile.getPath());
+                            if (bookChaptersBean == null) {
+                                FileUtils.deleteFile(eBookUnzipFile);
+                                FileUtils.deleteFile(eBookUnzipTOCFile);
+                                return;
+                            }
                         } else {
                             bookChaptersBean = readEPubBook(ePubPath, eBookUnzipPath, eBookUnzipTOCFile.getPath());
                         }

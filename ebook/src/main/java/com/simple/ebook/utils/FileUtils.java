@@ -158,6 +158,10 @@ public class FileUtils {
     //递归删除文件夹下的数据
     public static synchronized void deleteFile(String filePath) {
         File file = new File(filePath);
+        deleteFile(file);
+    }
+
+    public static synchronized void deleteFile(File file) {
         if (!file.exists()) return;
 
         if (file.isDirectory()) {
@@ -170,6 +174,8 @@ public class FileUtils {
         //删除文件
         file.delete();
     }
+
+
 
     //获取txt文件
     public static List<File> getTxtFiles(String filePath) {

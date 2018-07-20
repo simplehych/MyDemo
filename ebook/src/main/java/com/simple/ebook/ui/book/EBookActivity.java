@@ -15,7 +15,10 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,21 +40,38 @@ import com.simple.ebook.bean.BookChaptersBean;
 import com.simple.ebook.bean.CollBookBean;
 import com.simple.ebook.helper.BookChapterHelper;
 import com.simple.ebook.helper.ReadSettingManager;
-import com.simple.ebook.ui.book.adapter.ReadCategoryAdapter;
+import com.simple.ebook.ui.book.adapter.MyFragmentAdapter;
+import com.simple.ebook.ui.book.adapter.CatalogAdapter;
+import com.simple.ebook.ui.book.fragment.BaseListFragment;
+import com.simple.ebook.ui.book.fragment.CatalogFragment;
+import com.simple.ebook.ui.book.fragment.MarkFragment;
 import com.simple.ebook.utils.BrightnessUtils;
-import com.simple.ebook.utils.FileUtils;
 import com.simple.ebook.utils.ScreenUtils;
 import com.simple.ebook.utils.StatusBarUtils;
 import com.simple.ebook.utils.StringUtils;
+import com.simple.ebook.utils.ToastUtils;
 import com.simple.ebook.widget.dialog.ReadSettingDialog;
 import com.simple.ebook.widget.theme.page.NetPageLoader;
 import com.simple.ebook.widget.theme.page.PageLoader;
 import com.simple.ebook.widget.theme.page.PageView;
 import com.simple.ebook.widget.theme.page.TxtChapter;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -92,7 +112,7 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
     private boolean isRegistered = false;
 
     /*****************view******************/
-    private ReadCategoryAdapter mReadCategoryAdapter;
+    private CatalogAdapter mReadCategoryAdapter;
     private ReadSettingDialog mSettingDialog;
     private PageLoader mPageLoader;
     private Animation mTopInAnim;
@@ -158,7 +178,6 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
             }
         }
     };
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -345,7 +364,88 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
             public void cancel() {
             }
         });
+
+        initCatalogMark();
     }
+
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
+    private BaseListFragment catalogFragment;
+    private BaseListFragment markFragment;
+
+    private void initCatalogMark() {
+        String[] catalogMark = new String[]{"目录", "书签"};
+        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        mTabLayout.addTab(mTabLayout.newTab().setText(catalogMark[0]));
+        mTabLayout.addTab(mTabLayout.newTab().setText(catalogMark[1]));
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        mTabLayout.setupWithViewPager(mViewPager);
+
+        List<Fragment> fragments = new ArrayList<>();
+        catalogFragment = new CatalogFragment();
+        catalogFragment.setOnItemClickListener(new CatalogFragment.OnItemClickListener() {
+            @Override
+            public void onItemClick(final int position) {
+                mReadDlSlide.closeDrawer(Gravity.START);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        setCategorySelect(position);
+                        mPageLoader.skipToChapter(position);
+                    }
+                }, 400);
+            }
+        });
+
+        markFragment = new MarkFragment();
+        markFragment.setOnItemClickListener(new BaseListFragment.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+
+            }
+        });
+
+        fragments.add(catalogFragment);
+        fragments.add(markFragment);
+
+        MyFragmentAdapter adapter = new MyFragmentAdapter(getSupportFragmentManager(), fragments, Arrays.asList(catalogMark));
+        if (mTabLayout.getTabCount() != adapter.getCount()) {
+            throw new IllegalArgumentException(" tabCount != fragments....");
+        }
+        mViewPager.setAdapter(adapter);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.i(TAG, "select page:" + position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
 
     private void initData() {
         mModel = new EBookModel(this);
@@ -354,19 +454,23 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
 
     private void setCategory() {
         mRvReadCategory.setLayoutManager(new LinearLayoutManager(this));
-        mReadCategoryAdapter = new ReadCategoryAdapter(mTxtChapters);
+        mReadCategoryAdapter = new CatalogAdapter(mTxtChapters);
         mRvReadCategory.setAdapter(mReadCategoryAdapter);
-
         if (mTxtChapters.size() > 0) {
             setCategorySelect(0);
         }
 
         mReadCategoryAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, final int position) {
                 setCategorySelect(position);
                 mReadDlSlide.closeDrawer(Gravity.START);
-                mPageLoader.skipToChapter(position);
+                Observable.timer(1, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        mPageLoader.skipToChapter(position);
+                    }
+                });
             }
         });
 
@@ -388,6 +492,9 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         }
 
         mReadCategoryAdapter.notifyDataSetChanged();
+        markFragment.setData(mTxtChapters);
+        catalogFragment.setData(mTxtChapters);
+        mRvReadCategory.smoothScrollToPosition(selectPos);
     }
 
     private void toggleNightMode() {
@@ -500,7 +607,14 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         mBottomOutAnim.setDuration(200);
     }
 
+
     public void bookChapters(BookChaptersBean bookChaptersBean) {
+
+        if (bookChaptersBean == null) {
+            ToastUtils.show(this, "获取书籍信息错误，请重试");
+            finish();
+            return;
+        }
         bookChapterList.clear();
         for (BookChaptersBean.ChapterBean bean : bookChaptersBean.getChapters()) {
             BookChapterBean chapterBean = new BookChapterBean();

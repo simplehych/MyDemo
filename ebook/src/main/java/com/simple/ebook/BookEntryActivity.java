@@ -83,6 +83,11 @@ public class BookEntryActivity extends AppCompatActivity {
 
         File bookEPubFile = new File(mEPubPath);
         if (bookEPubFile.exists()) {
+            if (!mEPubPath.endsWith(".epub")) {
+                ToastUtils.show(this, "获取书籍信息错误，请重试");
+                FileUtils.deleteFile(bookEPubFile);
+                finish();
+            }
             jumpBookActivity(mEPubPath);
         } else {
             if (!NetWorkUtils.isNetConnected(this)) {

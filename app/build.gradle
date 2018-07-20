@@ -32,6 +32,12 @@ android {
     lintOptions {
         abortOnError false
     }
+    sourceSets{
+        main {
+            res.srcDirs +="src/main/res-q"
+            res.srcDirs +="src/main/res-w"
+        }
+    }
 
 }
 
