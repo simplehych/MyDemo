@@ -8,13 +8,18 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/dp_10">
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="10dp">
 
         <TextView
             android:id="@+id/item_mark_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
+            android:ellipsize="end"
+            android:lines="1"
             android:text="书签"
             android:textColor="#222222"
             android:textSize="14sp" />

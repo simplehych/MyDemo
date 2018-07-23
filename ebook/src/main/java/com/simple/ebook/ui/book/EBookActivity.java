@@ -1,8 +1,10 @@
 package com.simple.ebook.ui.book;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
@@ -29,19 +31,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.simple.ebook.R;
+import com.simple.ebook.ReadBook;
 import com.simple.ebook.bean.BookChapterBean;
 import com.simple.ebook.bean.BookChaptersBean;
+import com.simple.ebook.bean.BookMarkBean;
 import com.simple.ebook.bean.CollBookBean;
 import com.simple.ebook.helper.BookChapterHelper;
+import com.simple.ebook.helper.BookMarkHelper;
 import com.simple.ebook.helper.ReadSettingManager;
-import com.simple.ebook.ui.book.adapter.MyFragmentAdapter;
+import com.simple.ebook.listener.ReadBookListener;
 import com.simple.ebook.ui.book.adapter.CatalogAdapter;
+import com.simple.ebook.ui.book.adapter.MyFragmentAdapter;
 import com.simple.ebook.ui.book.fragment.BaseListFragment;
 import com.simple.ebook.ui.book.fragment.CatalogFragment;
 import com.simple.ebook.ui.book.fragment.MarkFragment;
@@ -56,22 +63,10 @@ import com.simple.ebook.widget.theme.page.PageLoader;
 import com.simple.ebook.widget.theme.page.PageView;
 import com.simple.ebook.widget.theme.page.TxtChapter;
 
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -86,6 +81,7 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
     public static final String PARAM_EBOOK_EPUB_PATH = "param_book_epub_path";
 
     TextView mTvToolbarTitle;
+    ImageView mBookMarkIv;
     AppBarLayout mReadAblTopMenu;
     PageView mPvReadPage;
     TextView mReadTvPageTip;
@@ -99,7 +95,6 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
     RecyclerView mRvReadCategory;
     DrawerLayout mReadDlSlide;
 
-
     //注册 Brightness 的 uri
     private final Uri BRIGHTNESS_MODE_URI =
             Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS_MODE);
@@ -107,7 +102,6 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
             Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS);
     private final Uri BRIGHTNESS_ADJ_URI =
             Settings.System.getUriFor("screen_auto_brightness_adj");
-
 
     private boolean isRegistered = false;
 
@@ -146,7 +140,6 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         }
     };
 
-
     //亮度调节监听
     //由于亮度调节没有 Broadcast 而是直接修改 ContentProvider 的。所以需要创建一个 Observer 来监听 ContentProvider 的变化情况。
     private ContentObserver mBrightObserver = new ContentObserver(new Handler()) {
@@ -178,6 +171,8 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
             }
         }
     };
+    private List<BookMarkBean> mBookMarks;
+    private String mBookIdName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -191,6 +186,7 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
 
     private void initView() {
         mTvToolbarTitle = (TextView) findViewById(R.id.tv_toolbar_title);
+        mBookMarkIv = (ImageView) findViewById(R.id.act_read_mark_iv);
         mReadAblTopMenu = (AppBarLayout) findViewById(R.id.read_abl_top_menu);
         mPvReadPage = (PageView) findViewById(R.id.pv_read_page);
         mReadTvPageTip = (TextView) findViewById(R.id.read_tv_page_tip);
@@ -296,6 +292,7 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onPageCountChange(int count) {
+                count = mPageLoader.getCurPageCount();
                 mReadSbChapterProgress.setEnabled(true);
                 mReadSbChapterProgress.setMax(count - 1);
                 mReadSbChapterProgress.setProgress(0);
@@ -398,9 +395,9 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
 
         List<Fragment> fragments = new ArrayList<>();
         catalogFragment = new CatalogFragment();
-        catalogFragment.setOnItemClickListener(new CatalogFragment.OnItemClickListener() {
+        catalogFragment.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(final int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, final int position) {
                 mReadDlSlide.closeDrawer(Gravity.START);
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -413,10 +410,44 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         });
 
         markFragment = new MarkFragment();
-        markFragment.setOnItemClickListener(new BaseListFragment.OnItemClickListener() {
+        markFragment.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
+            public void onItemClick(BaseQuickAdapter adapter, View view, final int position) {
+                BookMarkBean markBean = (BookMarkBean) adapter.getData().get(position);
+                int chapterPos = markBean.getChapterPos();
+                final int pagePos = markBean.getPagePos();
+                mPageLoader.skipToChapter(chapterPos);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mReadDlSlide.closeDrawer(Gravity.START);
+                        mPageLoader.skipToPage(pagePos);
+                    }
+                }, 100);
+            }
+        });
+        markFragment.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(final BaseQuickAdapter adapter, View view, final int position) {
+                hideSystemBar();
 
+                AlertDialog.Builder builder = new AlertDialog.Builder(EBookActivity.this);
+                builder.setItems(new String[]{"删除"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        adapter.remove(position);
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        hideSystemBar();
+                    }
+                });
+                return true;
             }
         });
 
@@ -446,8 +477,8 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-
     private void initData() {
+
         mModel = new EBookModel(this);
         mModel.loadChapters(mBookEPubPath);
     }
@@ -463,17 +494,16 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         mReadCategoryAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, final int position) {
-                setCategorySelect(position);
                 mReadDlSlide.closeDrawer(Gravity.START);
-                Observable.timer(1, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
+                new Handler().postDelayed(new Runnable() {
                     @Override
-                    public void accept(Long aLong) throws Exception {
+                    public void run() {
+                        setCategorySelect(position);
                         mPageLoader.skipToChapter(position);
                     }
-                });
+                }, 400);
             }
         });
-
     }
 
     /**
@@ -492,7 +522,7 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         }
 
         mReadCategoryAdapter.notifyDataSetChanged();
-        markFragment.setData(mTxtChapters);
+        markFragment.setData(mBookMarks);
         catalogFragment.setData(mTxtChapters);
         mRvReadCategory.smoothScrollToPosition(selectPos);
     }
@@ -529,6 +559,36 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         if (Build.VERSION.SDK_INT >= 19) {
             mReadAblTopMenu.setPadding(0, ScreenUtils.getStatusBarHeight(this), 0, 0);
         }
+
+        mBookMarkIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int curChapterPos = mPageLoader.getChapterPos();
+                int curPagePos = mPageLoader.getPagePos();
+                if (mBookMarkIv.isSelected()) {
+                    mBookMarkIv.setSelected(false);
+                    for (int i = 0; i < mBookMarks.size(); i++) {
+                        BookMarkBean bookMarkBean = mBookMarks.get(i);
+                        if (bookMarkBean.getChapterPos() == curChapterPos
+                                && bookMarkBean.getPagePos() == curPagePos) {
+                            mBookMarks.remove(i);
+                        }
+                    }
+                } else {
+                    mBookMarkIv.setSelected(true);
+                    BookMarkBean bookMarkBean = new BookMarkBean();
+                    bookMarkBean.setBookId(mBookIdName);
+                    bookMarkBean.setChapterPos(curChapterPos);
+                    bookMarkBean.setPagePos(curPagePos);
+                    bookMarkBean.setMarkTime(System.currentTimeMillis());
+                    bookMarkBean.setMarkTitle(mPageLoader.getCurPageTxt());
+                    if (bookChapterList != null && bookChapterList.size() > curChapterPos) {
+                        bookMarkBean.setMarkChapterName(bookChapterList.get(curChapterPos).getTitle());
+                    }
+                    mBookMarks.add(0, bookMarkBean);
+                }
+            }
+        });
     }
 
     private void initBottomMenu() {
@@ -590,6 +650,25 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
 
             showSystemBar();
         }
+
+        int curChapterPos = mPageLoader.getChapterPos();
+        int curPagePos = mPageLoader.getPagePos();
+
+        mBookMarkIv.setSelected(false);
+        if (mBookMarks != null && mBookMarks.size() > 0) {
+            for (int i = 0; i < mBookMarks.size(); i++) {
+                BookMarkBean bookMarkBean = mBookMarks.get(i);
+                String bookId = bookMarkBean.getBookId();
+                if (bookId.equals(mBookIdName)) {
+                    if (bookMarkBean.getChapterPos() == curChapterPos
+                            && bookMarkBean.getPagePos() == curPagePos) {
+                        mBookMarkIv.setSelected(true);
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 
 
@@ -618,7 +697,7 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         bookChapterList.clear();
         for (BookChaptersBean.ChapterBean bean : bookChaptersBean.getChapters()) {
             BookChapterBean chapterBean = new BookChapterBean();
-            chapterBean.setBookId(bookChaptersBean.getBook());
+            chapterBean.setBookId(bookChaptersBean.get_id());
             chapterBean.setLink(bean.getLink());
             chapterBean.setTitle(bean.getTitle());
 //            chapterBean.setTaskName("下载");
@@ -628,7 +707,8 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         CollBookBean collBookBean = new CollBookBean();
         collBookBean.setBookChapters(bookChapterList);
         File eBookEPubFile = new File(mBookEPubPath);
-        collBookBean.set_id(eBookEPubFile.getName());
+        mBookIdName = eBookEPubFile.getName();
+        collBookBean.set_id(mBookIdName);
 
         mPageLoader.openBook(collBookBean);
 
@@ -637,6 +717,7 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         //异步下载更新的内容存到数据库
         //TODO
         BookChapterHelper.getsInstance(this).saveBookChaptersWithAsync(bookChapterList);
+        mBookMarks = BookMarkHelper.getInstance(this).getMarks(mBookIdName);
     }
 
     public void finishChapters() {
@@ -721,6 +802,9 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
     protected void onResume() {
         super.onResume();
         mWakeLock.acquire();
+        if (ReadBook.getInstance().getReadBookListener() != null) {
+            ReadBook.getInstance().getReadBookListener().startRead();
+        }
     }
 
     @Override
@@ -728,7 +812,12 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         super.onPause();
         mWakeLock.release();
         mPageLoader.saveRecord();
+        BookMarkHelper.getInstance(this).saveMarks(mBookMarks);
+        if (ReadBook.getInstance().getReadBookListener() != null) {
+            ReadBook.getInstance().getReadBookListener().stopRead();
+        }
     }
+
 
     @Override
     protected void onStop() {
@@ -778,7 +867,6 @@ public class EBookActivity extends AppCompatActivity implements View.OnClickList
         } else if (i == R.id.tv_toolbar_title) {
             finish();
 
-        } else {
         }
     }
 }

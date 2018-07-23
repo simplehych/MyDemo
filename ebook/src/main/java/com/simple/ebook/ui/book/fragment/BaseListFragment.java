@@ -23,7 +23,8 @@ public abstract class BaseListFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private BaseQuickAdapter mRecyclerAdapter;
-    private OnItemClickListener mOnItemClickListener;
+    private BaseQuickAdapter.OnItemClickListener mOnItemClickListener;
+    private BaseQuickAdapter.OnItemLongClickListener OnItemLongClickListener;
 
 
     @Nullable
@@ -36,14 +37,8 @@ public abstract class BaseListFragment extends Fragment {
         mRecyclerAdapter = getAdapter();
         if (mRecyclerAdapter != null) {
             mRecyclerView.setAdapter(mRecyclerAdapter);
-            mRecyclerAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                    if (mOnItemClickListener != null) {
-                        mOnItemClickListener.onItemClick(position);
-                    }
-                }
-            });
+            mRecyclerAdapter.setOnItemClickListener(mOnItemClickListener);
+            mRecyclerAdapter.setOnItemLongClickListener(OnItemLongClickListener);
         }
         return view;
     }
@@ -54,13 +49,17 @@ public abstract class BaseListFragment extends Fragment {
         void onItemClick(int position);
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    public void setOnItemClickListener(BaseQuickAdapter.OnItemClickListener listener) {
         mOnItemClickListener = listener;
     }
 
-    public void setData(List<TxtChapter> data) {
+    public void setOnItemLongClickListener(BaseQuickAdapter.OnItemLongClickListener listener) {
+        OnItemLongClickListener = listener;
+    }
+
+    public void setData(List data) {
         if (mRecyclerAdapter != null) {
-            mRecyclerAdapter.replaceData(data);
+            mRecyclerAdapter.setNewData(data);
             mRecyclerAdapter.notifyDataSetChanged();
         }
     }

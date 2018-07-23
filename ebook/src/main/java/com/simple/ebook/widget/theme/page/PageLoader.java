@@ -256,6 +256,7 @@ public abstract class PageLoader {
         mStatus = STATUS_LOADING;
         //绘制当前的状态
         mCurChapterPos = pos;
+
         //将上一章的缓存设置为null
         mWeakPrePageList = null;
 
@@ -1077,6 +1078,21 @@ public abstract class PageLoader {
         return mCurPageList.get(pos);
     }
 
+    public String getCurPageTxt() {
+        List<String> lines = mCurPage.getLines();
+        if (lines != null) {
+            return lines.get(0);
+        } else {
+            return "";
+        }
+    }
+
+    public int getCurPageCount() {
+        if (mCurPageList == null) {
+            return 0;
+        }
+        return mCurPageList.size();
+    }
 
     /**************************************private method********************************************/
 

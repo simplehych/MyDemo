@@ -55,20 +55,7 @@ public class BookEntryActivity extends AppCompatActivity {
         }
 
         mProgressLayout = (RelativeLayout) findViewById(R.id.loading_progress_layout);
-
-        findViewById(R.id.activity_test_2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openBook();
-            }
-        });
-    }
-
-    public static void start(Activity activity, String bookUrl) {
-        Intent intent = new Intent();
-        intent.setClass(activity, BookEntryActivity.class);
-        intent.putExtra(BOOK_URL, bookUrl);
-        activity.startActivity(intent);
+        openBook();
     }
 
     private void openBook() {

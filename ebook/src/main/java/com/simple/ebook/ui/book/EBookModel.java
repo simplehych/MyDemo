@@ -83,7 +83,6 @@ public class EBookModel extends BaseViewModel {
                             if (bookChaptersBean == null) {
                                 FileUtils.deleteFile(eBookUnzipFile);
                                 FileUtils.deleteFile(eBookUnzipTOCFile);
-                                return;
                             }
                         } else {
                             bookChaptersBean = readEPubBook(ePubPath, eBookUnzipPath, eBookUnzipTOCFile.getPath());
