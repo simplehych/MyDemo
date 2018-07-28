@@ -1,4 +1,4 @@
-include ':shortcut', ':matrixbitmap', ':frescocutimg', ':app', ':svg', ':testbintray', ':kotlin', ':designpattern', ':ebook'
+include ':shortcut', ':matrixbitmap', ':frescocutimg', ':app', ':svg', ':testbintray', ':kotlin', ':designpattern', ':ebook', ':review'
 include ':memoryleak'
 include ':widget:recordview'
 include ':widget:multiimageview'

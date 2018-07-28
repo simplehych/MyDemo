@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.simple.review.scroller.ScrollerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:text="first" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:text="second" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:text="third" />
+</com.simple.review.scroller.ScrollerLayout>

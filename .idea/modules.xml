@@ -13,6 +13,7 @@
       <module fileurl="file://$PROJECT_DIR$/widget/multiimageview/multiimageview.iml" filepath="$PROJECT_DIR$/widget/multiimageview/multiimageview.iml" />
       <module fileurl="file://$PROJECT_DIR$/widget/practice/practice.iml" filepath="$PROJECT_DIR$/widget/practice/practice.iml" />
       <module fileurl="file://$PROJECT_DIR$/widget/recordview/recordview.iml" filepath="$PROJECT_DIR$/widget/recordview/recordview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/review/review.iml" filepath="$PROJECT_DIR$/review/review.iml" />
       <module fileurl="file://$PROJECT_DIR$/shortcut/shortcut.iml" filepath="$PROJECT_DIR$/shortcut/shortcut.iml" />
       <module fileurl="file://$PROJECT_DIR$/svg/svg.iml" filepath="$PROJECT_DIR$/svg/svg.iml" />
       <module fileurl="file://$PROJECT_DIR$/testbintray/testbintray.iml" filepath="$PROJECT_DIR$/testbintray/testbintray.iml" />
