@@ -18,6 +18,9 @@
         </activity>
         <activity android:name=".scroller.ScrollerActivity" />
         <activity android:name=".distribute.DistributeActivity" />
+        <activity android:name=".view.inflate.InflateActivity" />
+        <activity android:name=".view.draw.MyActivity" />
+        <activity android:name=".make.MakeActivity" />
     </application>
 
 </manifest>

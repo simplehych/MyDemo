@@ -19,3 +19,18 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep class com.simple.review.make.MakeFragment {
+    *;
+}
+
+-keepclasseswithmembers class com.simple.review.make.Utils {
+    public void methodUnused();
+}
+
+-keep class org.litepal.** {
+    *;
+}
+
+-keep class android.support.** {
+    *;
+}

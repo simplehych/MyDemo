@@ -7,13 +7,34 @@
     <Button
         android:id="@+id/distribute_act_button"
         android:layout_width="match_parent"
-        android:layout_height="100dp" />
+        android:layout_height="60dp" />
 
     <ImageView
         android:id="@+id/distribute_act_iv"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="60dp"
         android:background="@color/colorAccent" />
 
+    <com.simple.review.distribute.MyLayout
+        android:id="@+id/view_group_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#666666"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/view_group_btn_1"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="view_group_btn_1" />
+
+        <Button
+            android:id="@+id/view_group_btn_2"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="view_group_btn_1" />
+
+    </com.simple.review.distribute.MyLayout>
 
 </LinearLayout>
