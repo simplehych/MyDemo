@@ -5,12 +5,14 @@ import android.animation.AnimatorInflater;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -204,6 +206,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void testWarmSwap2() {
+        AnimationDrawable frameAnim = new AnimationDrawable();
+        frameAnim.addFrame(getResources().getDrawable(R.drawable.ic_launcher_background), 50);
+        frameAnim.addFrame(getResources().getDrawable(R.drawable.ic_launcher_background), 50);
+        frameAnim.addFrame(getResources().getDrawable(R.drawable.ic_launcher_background), 50);
+        //是否重复
+        frameAnim.setOneShot(false);
+        //播放开始
+        frameAnim.start();
+        //播放结束
+        frameAnim.start();
 
     }
 
