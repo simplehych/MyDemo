@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.simple.review">
-
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -21,6 +21,7 @@
         <activity android:name=".view.inflate.InflateActivity" />
         <activity android:name=".view.draw.MyActivity" />
         <activity android:name=".make.MakeActivity" />
+        <activity android:name=".immerse.ImmerseActivity" />
     </application>
 
 </manifest>

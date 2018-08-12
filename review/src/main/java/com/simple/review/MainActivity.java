@@ -11,9 +11,13 @@ import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
@@ -21,14 +25,25 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.view.animation.Animation;
+import android.widget.ImageView;
 
 import com.simple.review.animator.ValueAnimatorTest;
 import com.simple.review.distribute.DistributeActivity;
+import com.simple.review.immerse.ImmerseActivity;
 import com.simple.review.scroller.ScrollerActivity;
 import com.simple.review.view.draw.MyActivity;
 import com.simple.review.view.inflate.InflateActivity;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -37,11 +52,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private View mTestBtn;
     private View stubView;
     private View button;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        imageView = (ImageView) findViewById(R.id.test_image_view);
         button = findViewById(R.id.button);
         button.setOnClickListener(this);
         findViewById(R.id.act_main_scroller).setOnClickListener(this);
@@ -56,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         int memoryClass = activityManager.getMemoryClass();
         System.out.println("memoryClass: " + memoryClass);
+        int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        System.out.println("maxMemory: " + maxMemory + "kb");
     }
 
     @Override
@@ -83,7 +102,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.act_main_scroller:
-                startActivity(ScrollerActivity.class);
+                testBitmap();
+//                startActivity(ImmerseActivity.class);
+//                startActivity(ScrollerActivity.class);
                 break;
             case R.id.act_main_event_distribute:
                 startActivity(DistributeActivity.class);
@@ -242,5 +263,111 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (Exception httpResponseCacheNotAvailable) {
             httpResponseCacheNotAvailable.printStackTrace();
         }
+    }
+
+    private void testBitmap() {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                String path = "http://www.baidu.com/img/bd_logo1.png";
+                Bitmap imageFromNet = getImageFromNet(path);
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+//        BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher, options);
+                InputStream inputStream = null;
+                try {
+                    URL url = new URL(path);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setConnectTimeout(8000);
+                    conn.setReadTimeout(8000);
+                    conn.connect();
+                    int responseCode = conn.getResponseCode();
+                    System.out.println("testBitmap responseCode: " + responseCode);
+                    inputStream = conn.getInputStream();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+
+                /*
+                 * 获取去图片信息之前不能使用非option方法，否则过去不出来
+                 */
+//                final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+
+                Bitmap bitmap1 = BitmapFactory.decodeStream(inputStream, null, options);
+//                byte[] data = inputStream2ByteArr(inputStream);//将InputStream转为byte数组，可以多次读取
+//                BitmapFactory.decodeByteArray(data, 0, data.length, options);
+                int outWidth = options.outWidth;
+                int outHeight = options.outHeight;
+                String outMimeType = options.outMimeType;
+
+                System.out.println("testBitmap outWidth: " + outWidth + " outHeight: " + outHeight + " outMimeType: " + outMimeType);
+
+            }
+        }.start();
+    }
+
+    private Bitmap getImageFromNet(String btp) {
+        HttpURLConnection conn = null;
+        try {
+            URL myUri = new URL(btp); // 创建URL对象
+            // 创建链接
+            conn = (HttpURLConnection) myUri.openConnection();
+            conn.setConnectTimeout(10000);// 设置链接超时
+            conn.setReadTimeout(5000);
+            conn.setRequestMethod("GET");// 设置请求方法为get
+            conn.connect();// 开始连接
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                InputStream is = conn.getInputStream();
+                // 根据流数据创建 一个Bitmap位图对象
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                Bitmap bitmap = BitmapFactory.decodeStream(is, null, options);
+                int outWidth = options.outWidth;
+                int outHeight = options.outHeight;
+                String outMimeType = options.outMimeType;
+
+                System.out.println("testBitmap outWidth: " + outWidth
+                        + " outHeight: " + outHeight
+                        + " outMimeType: " + outMimeType
+                );
+
+                return bitmap;
+                // 访问成功
+            } else {
+                Log.i(TAG, "访问失败：responseCode=" + responseCode);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+
+            }
+        }
+        return null;
+
+    }
+
+    private byte[] inputStream2ByteArr(InputStream inputStream) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            byte[] buff = new byte[1024];
+            int len = 0;
+            while ((len = inputStream.read(buff)) != -1) {
+                outputStream.write(buff, 0, len);
+            }
+            inputStream.close();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return outputStream.toByteArray();
     }
 }
