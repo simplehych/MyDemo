@@ -28,6 +28,7 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 
 import com.simple.review.animator.ValueAnimatorTest;
+import com.simple.review.bitmap.BitmapTest;
 import com.simple.review.distribute.DistributeActivity;
 import com.simple.review.immerse.ImmerseActivity;
 import com.simple.review.scroller.ScrollerActivity;
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.act_main_scroller:
-                testBitmap();
+                startActivity(BitmapTest.class);
 //                startActivity(ImmerseActivity.class);
 //                startActivity(ScrollerActivity.class);
                 break;
