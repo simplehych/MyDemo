@@ -162,6 +162,18 @@ public class ZoomImageView extends View {
                         moveDistanceX = 0;
                     }
 
+                    if (totalTranslateY + moveDistanceY > 0) {
+                        moveDistanceY = 0;
+                    } else if (height - (totalTranslateY + moveDistanceY) > currentBitmapHeight) {
+                        moveDistanceY = 0;
+                    }
+
+                    invalidate();
+                    lastXMove = xMove;
+                    lastYMove = yMove;
+
+                } else if (2 == event.getPointerCount()) {
+                    //当有俩根手指按在屏幕上移动时，为缩放状态
                 }
                 break;
             case MotionEvent.ACTION_POINTER_UP:

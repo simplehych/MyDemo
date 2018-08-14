@@ -27,6 +27,8 @@ import android.view.ViewStub;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 
+import com.simple.review.animator.AnimatorTest;
+import com.simple.review.animator.TweenedAnimation;
 import com.simple.review.animator.ValueAnimatorTest;
 import com.simple.review.bitmap.BitmapTest;
 import com.simple.review.distribute.DistributeActivity;
@@ -117,18 +119,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(MyActivity.class);
                 break;
             case R.id.button:
-                if (stubView == null) {
-                    ViewStub viewStub = (ViewStub) findViewById(R.id.viewStub2);
-                    if (viewStub != null) {
-                        stubView = viewStub.inflate();
-                        break;
-                    }
-                }
-                if (stubView.getVisibility() == View.VISIBLE) {
-                    stubView.setVisibility(View.GONE);
-                } else {
-                    stubView.setVisibility(View.VISIBLE);
-                }
+//                TweenedAnimation.testXML(this, button);
+                AnimatorTest.test(this, button);
+//                if (stubView == null) {
+//                    ViewStub viewStub = (ViewStub) findViewById(R.id.viewStub2);
+//                    if (viewStub != null) {
+//                        stubView = viewStub.inflate();
+//                        break;
+//                    }
+//                }
+//                if (stubView.getVisibility() == View.VISIBLE) {
+//                    stubView.setVisibility(View.GONE);
+//                } else {
+//                    stubView.setVisibility(View.VISIBLE);
+//                }
                 break;
             default:
                 Intent intent = new Intent();
